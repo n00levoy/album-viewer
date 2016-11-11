@@ -1,6 +1,7 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QtQuickControls2>
+#include <taglib/fileref.h>
 
 int main(int argc, char *argv[])
 {

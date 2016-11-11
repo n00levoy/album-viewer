@@ -1,6 +1,7 @@
 import QtQuick 2.7
 import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.0
+import QtQuick.Dialogs 1.2
 
 ApplicationWindow {
     visible: true
@@ -8,30 +9,48 @@ ApplicationWindow {
     height: 480
     title: qsTr("Hello World")
 
-    SwipeView {
-        id: swipeView
-        anchors.fill: parent
-        currentIndex: tabBar.currentIndex
+    Rectangle {
+        id: textRect
+        width: parent.width - 50
+        height: 100
+        color: "#1565c0"
+        x: parent.width / 2 - width / 2
+        y: 30
+        radius: 10
+    }
 
-        Page1 {
-        }
+    Text {
+        id: infoText
+        text: "Empty"
+        anchors.centerIn: textRect
+        color: "#FFFFFF"
 
-        Page {
-            Label {
-                text: qsTr("Second page")
-                anchors.centerIn: parent
-            }
+        font {
+            pointSize: 20
         }
     }
 
-    footer: TabBar {
-        id: tabBar
-        currentIndex: swipeView.currentIndex
-        TabButton {
-            text: qsTr("First")
+    Button {
+        text: "choose folder"
+        anchors.centerIn: parent
+        onClicked: {
+            fileDialog.visible = true
         }
-        TabButton {
-            text: qsTr("Second")
+    }
+
+    FileDialog {
+        id: fileDialog
+        title: "Please choose a file"
+        folder: shortcuts.home
+        //selectFolder: true
+        onAccepted: {
+            console.log("You chose: " + fileDialog.folder)
+
+            visible = false
+        }
+        onRejected: {
+            console.log("Canceled")
+            Qt.quit()
         }
     }
 }

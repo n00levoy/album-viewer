@@ -158,3 +158,5 @@ bool TrackInfo::setCoverArt(const QImage trackCoverArt)
     else
         return false;
 }
+
+
