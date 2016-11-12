@@ -5,7 +5,9 @@ CONFIG += c++11
 SOURCES += main.cpp \
     trackinfo.cpp \
     trackloader.cpp \
-    tracktagdata.cpp
+    tracktagdata.cpp \
+    trackcoverart.cpp \
+    trackmetadata.cpp
 
 RESOURCES += qml.qrc
 
@@ -30,4 +32,6 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 HEADERS += \
     trackinfo.h \
     trackloader.h \
-    tracktagdata.h
+    tracktagdata.h \
+    trackcoverart.h \
+    trackmetadata.h

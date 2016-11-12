@@ -188,11 +188,11 @@ bool TrackTagData::setGenre(const QString trackGenre)
         return false;
 }
 
-// *************************
+// *******************************
 //
 //  Управление полем "Композитор"
 //
-// *************************
+// *******************************
 
 const QString TrackTagData::getComposer()
 {
