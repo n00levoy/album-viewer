@@ -41,11 +41,11 @@ ApplicationWindow {
     FileDialog {
         id: fileDialog
         title: "Please choose a file"
-        folder: shortcuts.home
+        folder: "file:///D:/1999 - American Football/"
+        //folder: shortcuts.home
         //selectFolder: true
         onAccepted: {
-            console.log("You chose: " + fileDialog.folder)
-
+            infoText.text = loader.loadFromFile(fileDialog.fileUrl)
             visible = false
         }
         onRejected: {
