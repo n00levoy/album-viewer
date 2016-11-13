@@ -23,14 +23,14 @@ public:
     // **********************************************
 
     TrackTagData(const QString trackTitle,                   // Название трека
-                 int           trackNumber,                  // Номер трека
+                 const int     trackNumber,                  // Номер трека
                  const QString trackArtist,                  // Исполнитель
                  const QString trackAlbum,                   // Альбом
-                 const QString trackYear        = QString(), // Год
+                 const int     trackYear        = 0,         // Год
                  const QString trackGenre       = QString(), // Жанр
                  const QString trackAlbumArtist = QString(), // Исполнитель альбома
                  const QString trackComposer    = QString(), // Композитор
-                 int           trackDiscNumber  = 0          // Номер диска
+                 const int     trackDiscNumber  = 0          // Номер диска
                 );
 
     // ****************
@@ -49,9 +49,6 @@ public:
     const QString getTitle();
     void          setTitle(const QString trackTitle);
 
-    const QString getYear();
-    void          setYear(const QString trackYear);
-
     const QString getGenre();
     void          setGenre(const QString trackGenre);
 
@@ -62,6 +59,9 @@ public:
     int  getTrackNumber();
     void setTrackNumber(const int trackNumber);
 
+    int  getYear();
+    void setYear(const int trackYear);
+
     int  getDiscNumber();
     void setDiscNumber(const int trackDiscNumber);
 
@@ -70,11 +70,11 @@ private:
     QString m_albumName;    // Название альбома
     QString m_artist;       // Исполнитель
     QString m_title;        // Название трека
-    QString m_year;         // Год (дата)
     QString m_genre;        // Жанр
     QString m_composer;     // Композитор
 
     int m_trackNumber;      // Номер трека
+    int m_year;             // Год (дата)
     int m_discNumber;       // Номер диска
 };
 

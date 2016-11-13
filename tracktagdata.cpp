@@ -11,12 +11,12 @@ TrackTagData::TrackTagData()
     m_title       = QString();
     m_artist      = QString();
     m_albumName   = QString();
-    m_year        = QString();
     m_genre       = QString();
     m_albumArtist = QString();
     m_composer    = QString();
 
     m_trackNumber = 0;
+    m_year        = 0;
     m_discNumber  = 0;
 }
 
@@ -27,20 +27,19 @@ TrackTagData::TrackTagData()
 // **************************************************************
 
 TrackTagData::TrackTagData(const QString trackTitle,       // Название трека
-                           int           trackNumber,      // Номер трека
+                           const int     trackNumber,      // Номер трека
                            const QString trackArtist,      // Исполнитель
                            const QString trackAlbum,       // Альбом
-                           const QString trackYear,        // Год
+                           const int     trackYear,        // Год
                            const QString trackGenre,       // Жанр
                            const QString trackAlbumArtist, // Исполнитель альбома
                            const QString trackComposer,    // Композитор
-                           int           trackDiscNumber   // Номер диска
+                           const int     trackDiscNumber   // Номер диска
                           )
 {
     m_title       = trackTitle;
     m_artist      = trackArtist;
     m_albumName   = trackAlbum;
-    m_year        = trackYear;
     m_genre       = trackGenre;
     m_albumArtist = trackAlbumArtist;
     m_composer    = trackComposer;
@@ -49,6 +48,11 @@ TrackTagData::TrackTagData(const QString trackTitle,       // Название �
         m_trackNumber = trackNumber;
     else
         m_trackNumber = 0;
+
+    if(trackYear > 0)
+        m_year = trackYear;
+    else
+        m_year = 0;
 
     if(trackNumber > 0)
         m_discNumber = trackDiscNumber;
@@ -120,22 +124,6 @@ void TrackTagData::setTitle(const QString trackTitle)
     m_title = trackTitle;
 }
 
-// ************************
-//
-//  Управление полем "Год"
-//
-// ************************
-
-const QString TrackTagData::getYear()
-{
-    return m_year;
-}
-
-void TrackTagData::setYear(const QString trackYear)
-{
-    m_year = trackYear;
-}
-
 // *************************
 //
 //  Управление полем "Жанр"
@@ -185,6 +173,22 @@ void TrackTagData::setTrackNumber(const int trackNumber)
         m_trackNumber = trackNumber;
     else
         m_trackNumber = 0;
+}
+
+// ************************
+//
+//  Управление полем "Год"
+//
+// ************************
+
+int TrackTagData::getYear()
+{
+    return m_year;
+}
+
+void TrackTagData::setYear(const int trackYear)
+{
+    m_year = trackYear;
 }
 
 // ********************************
