@@ -65,15 +65,12 @@ qlonglong TrackMetaData::getSize()
     return m_sizeInBytes;
 }
 
-bool TrackMetaData::setSize(const qlonglong trackSizeInBytes)
+void TrackMetaData::setSize(const qlonglong trackSizeInBytes)
 {
-    if(trackSizeInBytes != m_sizeInBytes && trackSizeInBytes > 0)
-    {
+    if(trackSizeInBytes > 0)
         m_sizeInBytes = trackSizeInBytes;
-        return true;
-    }
     else
-        return false;
+        m_sizeInBytes = 0;
 }
 
 // ***************************************
@@ -87,16 +84,12 @@ qlonglong TrackMetaData::getDuration()
     return m_durationInSeconds;
 }
 
-bool TrackMetaData::setDuration(const qlonglong trackDurationInSeconds)
+void TrackMetaData::setDuration(const qlonglong trackDurationInSeconds)
 {
-    if(trackDurationInSeconds != m_durationInSeconds &&
-       trackDurationInSeconds >  0)
-    {
+    if(trackDurationInSeconds >  0)
         m_durationInSeconds = trackDurationInSeconds;
-        return true;
-    }
     else
-        return false;
+        m_durationInSeconds = 0;
 }
 
 // ************************************
@@ -110,15 +103,12 @@ qlonglong TrackMetaData::getSampleRate()
     return m_sampleRate;
 }
 
-bool TrackMetaData::setSampleRate(const qlonglong trackSampleRate)
+void TrackMetaData::setSampleRate(const qlonglong trackSampleRate)
 {
-    if(trackSampleRate != m_sampleRate && trackSampleRate > 0)
-    {
+    if(trackSampleRate > 0)
         m_sampleRate = trackSampleRate;
-        return true;
-    }
     else
-        return false;
+        m_sampleRate = 0;
 }
 
 // **********************************
@@ -132,15 +122,12 @@ int TrackMetaData::getBitrate()
     return m_bitrate;
 }
 
-bool TrackMetaData::setBitrate(int trackBitrate)
+void TrackMetaData::setBitrate(const int trackBitrate)
 {
-    if(trackBitrate != m_bitrate && trackBitrate > 0)
-    {
+    if(trackBitrate > 0)
         m_bitrate = trackBitrate;
-        return true;
-    }
     else
-        return false;
+        m_bitrate = 0;
 }
 
 // ***************************************
@@ -154,13 +141,10 @@ int TrackMetaData::getChannelsNum()
     return m_channelsNum;
 }
 
-bool TrackMetaData::setChannelsNum(int trackChannelsNum)
+void TrackMetaData::setChannelsNum(const int trackChannelsNum)
 {
-    if(trackChannelsNum != m_channelsNum && trackChannelsNum > 0)
-    {
+    if(trackChannelsNum > 0)
         m_channelsNum = trackChannelsNum;
-        return true;
-    }
     else
-        return false;
+        m_channelsNum = 0;
 }

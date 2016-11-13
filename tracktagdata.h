@@ -38,32 +38,32 @@ public:
     // ****************
 
     const QString getAlbumArtist();
-    bool          setAlbumArtist(const QString trackAlbumArtist);
+    void          setAlbumArtist(const QString trackAlbumArtist);
 
     const QString getAlbumName();
-    bool          setAlbumName(const QString trackAlbumName);
+    void          setAlbumName(const QString trackAlbumName);
 
     const QString getArtist();
-    bool          setArtist(const QString trackArtist);
+    void          setArtist(const QString trackArtist);
 
     const QString getTitle();
-    bool          setTitle(const QString trackTitle);
+    void          setTitle(const QString trackTitle);
 
     const QString getYear();
-    bool          setYear(const QString trackYear);
+    void          setYear(const QString trackYear);
 
     const QString getGenre();
-    bool          setGenre(const QString trackGenre);
+    void          setGenre(const QString trackGenre);
 
     const QString getComposer();
-    bool          setComposer(const QString trackComposer);
+    void          setComposer(const QString trackComposer);
 
 
     int  getTrackNumber();
-    bool setTrackNumber(const int trackNumber);
+    void setTrackNumber(const int trackNumber);
 
     int  getDiscNumber();
-    bool setDiscNumber(const int trackDiscNumber);
+    void setDiscNumber(const int trackDiscNumber);
 
 private:
     QString m_albumArtist;  // Исполнитель альбома

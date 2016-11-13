@@ -34,20 +34,20 @@ public:
     // ****************
 
     qlonglong getSize();
-    bool      setSize(const qlonglong trackSizeInBytes);
+    void      setSize(const qlonglong trackSizeInBytes);
 
     qlonglong getDuration();
-    bool      setDuration(const qlonglong trackDurationInSeconds);
+    void      setDuration(const qlonglong trackDurationInSeconds);
 
     qlonglong getSampleRate();
-    bool      setSampleRate(const qlonglong trackSampleRate);
+    void      setSampleRate(const qlonglong trackSampleRate);
 
 
     int  getBitrate();
-    bool setBitrate(int trackBitrate);
+    void setBitrate(const int trackBitrate);
 
     int  getChannelsNum();
-    bool setChannelsNum(int trackChannelsNum);
+    void setChannelsNum(const int trackChannelsNum);
 
 private:
     qlonglong m_sizeInBytes;        // Размер файла в байтах

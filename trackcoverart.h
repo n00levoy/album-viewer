@@ -29,7 +29,7 @@ public:
     // ****************
 
     const QImage getCoverArt();
-    bool         setCoverArt(const QImage trackCoverArt);
+    void         setCoverArt(const QImage trackCoverArt);
 
 private:
     QImage m_coverArt;  // Обложка альбома

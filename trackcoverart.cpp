@@ -33,8 +33,7 @@ const QImage TrackCoverArt::getCoverArt()
     return m_coverArt;
 }
 
-bool TrackCoverArt::setCoverArt(const QImage trackCoverArt)
+void TrackCoverArt::setCoverArt(const QImage trackCoverArt)
 {
     m_coverArt = trackCoverArt;
-    return true;
 }
