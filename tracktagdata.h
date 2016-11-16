@@ -66,11 +66,11 @@ public:
     void setDiscNumber(const int trackDiscNumber);
 
 private:
-    QString m_albumArtist;  // Исполнитель альбома
-    QString m_albumName;    // Название альбома
-    QString m_artist;       // Исполнитель
     QString m_title;        // Название трека
+    QString m_artist;       // Исполнитель
+    QString m_albumName;    // Название альбома
     QString m_genre;        // Жанр
+    QString m_albumArtist;  // Исполнитель альбома
     QString m_composer;     // Композитор
 
     int m_trackNumber;      // Номер трека

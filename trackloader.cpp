@@ -20,45 +20,37 @@ QString TrackLoader::loadFromFile(QVariant folder)
 
 TrackTagData TrackLoader::loadTagDataFromFile(const QString fileName)
 {
-    TagLib::FileRef f(fileName.toStdWString().c_str());
+    TagLib::FileRef f(fileName.toLatin1().constData());
 
     TrackTagData tagData;
     if(!f.isNull() && f.tag())
     {
-        QString title  = f.tag()->title().toCString(true);
+        TagLib::Tag *tag = f.tag();
+
+        QString title  = tag->title().toCString(true);
         tagData.setTitle(title);
 
-        QString artist = f.tag()->artist().toCString(true);
+        QString artist = tag->artist().toCString(true);
         tagData.setArtist(artist);
 
-        QString album  = f.tag()->album().toCString(true);
+        QString album  = tag->album().toCString(true);
         tagData.setAlbumName(album);
 
-        int year = f.tag()->year();
+        int year = tag->year();
         tagData.setYear(year);
 
-        int trackNumber = f.tag()->track();
+        int trackNumber = tag->track();
         tagData.setTrackNumber(trackNumber);
 
-        QString genre  = f.tag()->genre().toCString(true);
+        QString genre  = tag->genre().toCString(true);
         tagData.setGenre(genre);
 
-        QString albumArtist = artist;
-        tagData.setAlbumArtist(albumArtist);
-
-        TagLib::PropertyMap propertyList = f.tag()->properties();
-
-        unsigned int longest = 0;
-        for(TagLib::PropertyMap::ConstIterator i = propertyList.begin(); i != propertyList.end(); ++i) {
-          if (i->first.size() > longest) {
-            longest = i->first.size();
-          }
-        }
+        TagLib::PropertyMap propertyList = f.file()->properties();
 
         for(TagLib::PropertyMap::ConstIterator i = propertyList.begin(); i != propertyList.end(); ++i) {
-          for(TagLib::StringList::ConstIterator j = i->second.begin(); j != i->second.end(); ++j) {
-            std::cout << std::left << std::setw(longest) << i->first << " - " << '"' << *j << '"' << std::endl;
-          }
+            for(TagLib::StringList::ConstIterator j = i->second.begin(); j != i->second.end(); ++j) {
+                qDebug() << i->first.toCString(true) << "-" << (*j).toCString(true);
+            }
         }
 
         return tagData;
