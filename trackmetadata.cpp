@@ -8,7 +8,6 @@
 
 TrackMetaData::TrackMetaData()
 {
-    m_sizeInBytes       = 0;
     m_durationInSeconds = 0;
     m_sampleRate        = 0;
     m_bitrate           = 0;
@@ -21,18 +20,12 @@ TrackMetaData::TrackMetaData()
 //
 // ***************************************************************
 
-TrackMetaData::TrackMetaData(qlonglong trackSize,       // Размер файла (bytes)
-                             qlonglong trackDuration,   // Длительность файла (s)
-                             qlonglong trackSampleRate, // Частота сэмплов (Hz)
-                             int       trackBitrate,    // Битрейт файла (в kb/s)
-                             int       trackChannelsNum // Количество аудиоканалов
+TrackMetaData::TrackMetaData(const qlonglong trackDuration,   // Длительность файла (s)
+                             const qlonglong trackSampleRate, // Частота сэмплов (Hz)
+                             const int       trackBitrate,    // Битрейт файла (в kb/s)
+                             const int       trackChannelsNum // Количество аудиоканалов
                             )
 {
-    if(trackSize > 0)
-        m_sizeInBytes = trackSize;
-    else
-        m_sizeInBytes = 0;
-
     if(trackDuration > 0)
         m_durationInSeconds = trackDuration;
     else
@@ -52,25 +45,6 @@ TrackMetaData::TrackMetaData(qlonglong trackSize,       // Размер файл
         m_channelsNum = trackChannelsNum;
     else
         m_channelsNum = 0;
-}
-
-// *********************************
-//
-//  Управление полем "Размер файла"
-//
-// *********************************
-
-qlonglong TrackMetaData::getSize()
-{
-    return m_sizeInBytes;
-}
-
-void TrackMetaData::setSize(const qlonglong trackSizeInBytes)
-{
-    if(trackSizeInBytes > 0)
-        m_sizeInBytes = trackSizeInBytes;
-    else
-        m_sizeInBytes = 0;
 }
 
 // ***************************************

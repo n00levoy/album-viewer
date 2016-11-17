@@ -1,9 +1,7 @@
 #ifndef TRACKINFO_H
 #define TRACKINFO_H
 
-#include <QString>
-#include <QImage>
-
+#include "trackfileinfo.h"
 #include "tracktagdata.h"
 #include "trackmetadata.h"
 #include "trackcoverart.h"
@@ -27,7 +25,7 @@ public:
     //  Создание объекта с полной информацией о треке
     // ***********************************************
 
-    TrackInfo(const QString       trackFilePath,                    // Путь к файлу
+    TrackInfo(const TrackFileInfo trackFileInfo,                    // Инфомарция о файле
               const TrackMetaData trackMetaData = TrackMetaData(),  // Мета-данные
               const TrackTagData  trackTagData  = TrackTagData(),   // ID3v2 тег-данные
               const TrackCoverArt trackCoverArt = TrackCoverArt()   // Обложка альбома
@@ -36,6 +34,9 @@ public:
     // ****************
     //  Методы доступа
     // ****************
+
+    const TrackFileInfo getFileInfo();
+    void                setFileInfo(const TrackFileInfo newFileInfo);
 
     const TrackTagData getTagData();
     void               setTagData(const TrackTagData newTagData);
@@ -46,15 +47,12 @@ public:
     const TrackCoverArt getCoverArt();
     void                setCoverArt(const TrackCoverArt newCoverArt);
 
-    const QString getFilePath();
-    void          setFilePath(const QString newFilePath);
-
 private:
-    TrackMetaData m_metaData;   // Мета-данные аудиофайла (размер, длительность, битрейт, частота сэмплов, количество каналов)
+    TrackFileInfo m_fileInfo;   // Общая информация о аудиофайле (размер файла, путь к файлу)
+    TrackMetaData m_metaData;   // Мета-данные аудиофайла (длительность, битрейт, частота сэмплов, количество каналов)
     TrackTagData  m_tagData;    // ID3v2 тег-данные
     TrackCoverArt m_coverArt;   // Обложка альбома
 
-    QString m_filePath;         // Путь к файлу
 };
 
 #endif // TRACKINFO_H

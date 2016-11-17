@@ -22,7 +22,7 @@ public:
     //  Создание объекта с обложкой
     // *****************************
 
-    TrackCoverArt(QImage trackCoverArt);
+    TrackCoverArt(const QImage trackCoverArt);
 
     // ****************
     //  Методы доступа

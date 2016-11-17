@@ -12,7 +12,7 @@ ApplicationWindow {
     visible: true
     width: 640
     height: 480
-    title: qsTr("Hello World")
+    title: qsTr("xD Player")
 
     DropShadow {
         anchors.fill: textRect
@@ -25,7 +25,7 @@ ApplicationWindow {
     Rectangle {
         id: textRect
         width: parent.width
-        height: 100
+        height: 80
         color: "#1E88E5"
         x: 0
         y: 0
@@ -108,12 +108,126 @@ ApplicationWindow {
 
             onClicked: {
                 playStatus = !playStatus
-                if(!playStatus)
+                if(playStatus)
+                {
                     playButtonContent.source = "images/playButton.svg"
+                    loader.pause()
+                }
                 else
+                {
                     playButtonContent.source = "images/pauseButton.svg"
+                    loader.play()
+                }
+            }
+
+
+        }
+
+        Button {
+            id: previousButton
+            anchors.right: playButton.left
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.rightMargin: 20
+            width: 40
+            height: 40
+
+            padding: 10
+
+            property int playStatus: 0
+
+            contentItem: Image {
+                id: previousButtonContent
+                source: "images/previousButton.svg"
+                fillMode: Image.PreserveAspectFit
+                smooth: true
+                sourceSize.height: parent.height
+                sourceSize.width: parent.width
+            }
+
+            background: Rectangle {
+                color: "#FFFFFF"
             }
         }
+
+        Button {
+            id: nextButton
+            anchors.left: playButton.right
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.leftMargin: 20
+            width: 40
+            height: 40
+
+            padding: 10
+
+            property int playStatus: 0
+
+            contentItem: Image {
+                id: nextButtonContent
+                source: "images/nextButton.svg"
+                fillMode: Image.PreserveAspectFit
+                smooth: true
+                sourceSize.height: parent.height
+                sourceSize.width: parent.width
+            }
+
+            background: Rectangle {
+                color: "#FFFFFF"
+            }
+        }
+
+        Button {
+            id: repeatButton
+            anchors.right: previousButton.left
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.rightMargin: 20
+            width: 40
+            height: 40
+
+            padding: 10
+
+            property int playStatus: 0
+
+            contentItem: Image {
+                id: repeatButtonContent
+                source: "images/repeatButton.svg"
+                fillMode: Image.PreserveAspectFit
+                smooth: true
+                sourceSize.height: parent.height
+                sourceSize.width: parent.width
+            }
+
+            background: Rectangle {
+                color: "#FFFFFF"
+            }
+        }
+
+        Button {
+            id: shuffleButton
+            anchors.left: nextButton.right
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.leftMargin: 20
+            width: 40
+            height: 40
+
+            padding: 10
+
+            property int playStatus: 0
+
+            contentItem: Image {
+                id: shuffleButtonContent
+                source: "images/shuffleButton.svg"
+                fillMode: Image.PreserveAspectFit
+                smooth: true
+                sourceSize.height: parent.height
+                sourceSize.width: parent.width
+            }
+
+            background: Rectangle {
+                color: "#FFFFFF"
+            }
+        }
+
+
 
     }
 }

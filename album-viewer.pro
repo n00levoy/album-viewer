@@ -1,4 +1,4 @@
-QT += qml quick quickcontrols2
+QT += qml quick quickcontrols2 multimedia
 
 CONFIG += c++11
 
@@ -7,7 +7,8 @@ SOURCES += main.cpp \
     trackloader.cpp \
     tracktagdata.cpp \
     trackcoverart.cpp \
-    trackmetadata.cpp
+    trackmetadata.cpp \
+    trackfileinfo.cpp
 
 RESOURCES += qml.qrc
 
@@ -34,4 +35,5 @@ HEADERS += \
     trackloader.h \
     tracktagdata.h \
     trackcoverart.h \
-    trackmetadata.h
+    trackmetadata.h \
+    trackfileinfo.h

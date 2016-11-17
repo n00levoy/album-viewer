@@ -5,7 +5,7 @@
 
 TrackLoader::TrackLoader(QObject *parent) : QObject(parent)
 {
-
+    player = new QMediaPlayer(this);
 }
 
 QString TrackLoader::loadFromFile(QVariant folder)
@@ -14,6 +14,8 @@ QString TrackLoader::loadFromFile(QVariant folder)
     QString correctedFolderString = folderString.replace("file:///", "");
 
     TrackTagData tagData = loadTagDataFromFile(correctedFolderString);
+
+    player->setMedia(QUrl::fromLocalFile(correctedFolderString));
 
     return tagData.getArtist() + " - " + tagData.getTitle();
 }
@@ -57,4 +59,14 @@ TrackTagData TrackLoader::loadTagDataFromFile(const QString fileName)
     }
     else
         return TrackTagData();
+}
+
+void TrackLoader::play()
+{
+    player->play();
+}
+
+void TrackLoader::pause()
+{
+    player->pause();
 }

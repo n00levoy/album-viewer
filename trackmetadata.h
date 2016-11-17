@@ -22,19 +22,15 @@ public:
     //  Создание объекта с полным набором информации
     // **********************************************
 
-    TrackMetaData(qlonglong trackSize,            // Размер файла (bytes)
-                  qlonglong trackDuration,        // Длительность файла (s)
-                  qlonglong trackSampleRate  = 0, // Частота сэмплов (Hz)
-                  int       trackBitrate     = 0, // Битрейт файла (в kb/s)
-                  int       trackChannelsNum = 0  // Количество аудиоканалов
+    TrackMetaData(const qlonglong trackDuration,        // Длительность файла (s)
+                  const qlonglong trackSampleRate  = 0, // Частота сэмплов (Hz)
+                  const int       trackBitrate     = 0, // Битрейт файла (в kb/s)
+                  const int       trackChannelsNum = 0  // Количество аудиоканалов
                  );
 
     // ****************
     //  Методы доступа
     // ****************
-
-    qlonglong getSize();
-    void      setSize(const qlonglong trackSizeInBytes);
 
     qlonglong getDuration();
     void      setDuration(const qlonglong trackDurationInSeconds);
@@ -50,7 +46,6 @@ public:
     void setChannelsNum(const int trackChannelsNum);
 
 private:
-    qlonglong m_sizeInBytes;        // Размер файла в байтах
     qlonglong m_durationInSeconds;  // Длительность файла в секундах
     qlonglong m_sampleRate;         // Частота сэмплов (в герцах)
 

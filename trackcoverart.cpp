@@ -17,7 +17,7 @@ TrackCoverArt::TrackCoverArt()
 //
 // ***********************************************
 
-TrackCoverArt::TrackCoverArt(QImage trackCoverArt)
+TrackCoverArt::TrackCoverArt(const QImage trackCoverArt)
 {
     m_coverArt = trackCoverArt;
 }

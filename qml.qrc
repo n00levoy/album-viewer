@@ -3,5 +3,10 @@
         <file>main.qml</file>
         <file>images/pauseButton.svg</file>
         <file>images/playButton.svg</file>
+        <file>images/previousButton.svg</file>
+        <file>images/nextButton.svg</file>
+        <file>images/repeatButton.svg</file>
+        <file>images/shuffleButton.svg</file>
+        <file>images/album-viewer.png</file>
     </qresource>
 </RCC>

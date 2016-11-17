@@ -8,8 +8,7 @@
 
 TrackInfo::TrackInfo()
 {
-    m_filePath = QString();
-
+    m_fileInfo = TrackFileInfo();
     m_metaData = TrackMetaData();
     m_tagData  = TrackTagData();
     m_coverArt = TrackCoverArt();
@@ -21,14 +20,13 @@ TrackInfo::TrackInfo()
 //
 // *********************************************************
 
-TrackInfo::TrackInfo(const QString       trackFilePath, // Путь к файлу
+TrackInfo::TrackInfo(const TrackFileInfo trackFileInfo, // Информация о файле
                      const TrackMetaData trackMetaData, // Мета-данные
                      const TrackTagData  trackTagData,  // ID3v2 тег-данные
                      const TrackCoverArt trackCoverArt  // Обложка альбома
                     )
 {
-    m_filePath = trackFilePath;
-
+    m_fileInfo = trackFileInfo;
     m_metaData = trackMetaData;
     m_tagData  = trackTagData;
     m_coverArt = trackCoverArt;
@@ -83,19 +81,18 @@ void TrackInfo::setCoverArt(const TrackCoverArt newCoverArt)
     m_coverArt = newCoverArt;
 }
 
-// *********************************
+// ***************************************
 //
-//  Управление полем "Путь к файлу"
+//  Управление полем "Информация о файле"
 //
-// *********************************
+// ***************************************
 
-const QString TrackInfo::getFilePath()
+const TrackFileInfo TrackInfo::getFileInfo()
 {
-    return m_filePath;
+    return m_fileInfo;
 }
 
-void TrackInfo::setFilePath(const QString newFilePath)
+void TrackInfo::setFileInfo(const TrackFileInfo newFileInfo)
 {
-    m_filePath = newFilePath;
+    m_fileInfo = newFileInfo;
 }
-
