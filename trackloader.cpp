@@ -3,6 +3,14 @@
 #include <iostream>
 #include <iomanip>
 
+#include <taglib/mpegfile.h>
+#include <taglib/id3v2tag.h>
+#include <taglib/attachedpictureframe.h>
+#include <taglib/id3v2frame.h>
+#include <taglib/tbytevector.h>
+
+#include <QLabel>
+
 TrackLoader::TrackLoader(QObject *parent) : QObject(parent)
 {
     player = new QMediaPlayer(this);
@@ -13,7 +21,8 @@ QString TrackLoader::loadFromFile(QVariant folder)
     QString folderString = folder.toString();
     QString correctedFolderString = folderString.replace("file:///", "");
 
-    TrackTagData tagData = loadTagDataFromFile(correctedFolderString);
+    TrackTagData  tagData  = loadTagDataFromFile (correctedFolderString);
+    TrackCoverArt coverArt = loadCoverArtFromFile(correctedFolderString);
 
     player->setMedia(QUrl::fromLocalFile(correctedFolderString));
 
@@ -22,44 +31,108 @@ QString TrackLoader::loadFromFile(QVariant folder)
 
 TrackTagData TrackLoader::loadTagDataFromFile(const QString fileName)
 {
-    TagLib::FileRef f(fileName.toLatin1().constData());
-
-    TrackTagData tagData;
-    if(!f.isNull() && f.tag())
+    if(fileName.endsWith(".mp3"))
     {
-        TagLib::Tag *tag = f.tag();
+        TagLib::MPEG::File file(fileName.toLatin1().constData());
 
-        QString title  = tag->title().toCString(true);
-        tagData.setTitle(title);
+        if(file.isValid() && file.tag())
+        {
+            TagLib::ID3v2::Tag *tag = file.ID3v2Tag();
 
-        QString artist = tag->artist().toCString(true);
-        tagData.setArtist(artist);
+            QString title   = tag->title().toCString(true);
+            QString artist  = tag->artist().toCString(true);
+            QString album   = tag->album().toCString(true);
+            int year        = tag->year();
+            int trackNumber = tag->track();
+            QString genre   = tag->genre().toCString(true);
 
-        QString album  = tag->album().toCString(true);
-        tagData.setAlbumName(album);
+            int     discNumber  = 0;
+            QString albumArtist = QString();
+            QString composer    = QString();
 
-        int year = tag->year();
-        tagData.setYear(year);
+            TagLib::PropertyMap propertyList = file.properties();
 
-        int trackNumber = tag->track();
-        tagData.setTrackNumber(trackNumber);
+            for(TagLib::PropertyMap::ConstIterator property = propertyList.begin();
+                property != propertyList.end();
+                ++property)
+            {
+                for(TagLib::StringList::ConstIterator propertyField = property->second.begin();
+                    propertyField != property->second.end();
+                    ++propertyField)
+                {
+                    QString fieldName    = property->first.toCString(true);
+                    QString fieldContent = (*propertyField).toCString(true);
 
-        QString genre  = tag->genre().toCString(true);
-        tagData.setGenre(genre);
+                    if(fieldName == "DISCNUMBER")
+                        discNumber = fieldContent.toInt();
+                    if(fieldName == "ALBUMARTIST")
+                        albumArtist = fieldContent;
+                    if(fieldName == "COMPOSER")
+                        composer = fieldContent;
+                }
+            }
 
-        TagLib::PropertyMap propertyList = f.file()->properties();
+            TrackTagData tagData;
+            tagData.setTitle      (title);
+            tagData.setTrackNumber(trackNumber);
+            tagData.setArtist     (artist);
+            tagData.setAlbumName  (album);
+            tagData.setYear       (year);
+            tagData.setGenre      (genre);
+            tagData.setAlbumArtist(albumArtist);
+            tagData.setComposer   (composer);
+            tagData.setDiscNumber (discNumber);
 
-        for(TagLib::PropertyMap::ConstIterator i = propertyList.begin(); i != propertyList.end(); ++i) {
-            for(TagLib::StringList::ConstIterator j = i->second.begin(); j != i->second.end(); ++j) {
-                qDebug() << i->first.toCString(true) << "-" << (*j).toCString(true);
+            return tagData;
+        }
+        else
+            return TrackTagData();
+    }
+
+    return TrackTagData();
+}
+
+TrackCoverArt TrackLoader::loadCoverArtFromFile(const QString fileName)
+{
+    if(fileName.endsWith(".mp3"))
+    {
+        TagLib::MPEG::File file(fileName.toLatin1().constData());
+
+        if(file.isValid() && file.hasID3v2Tag())
+        {
+            TagLib::ID3v2::Tag* tag = file.ID3v2Tag();
+
+            if(!tag->isEmpty())
+            {
+                TagLib::ID3v2::FrameList listOfMp3Frames = file.ID3v2Tag()->frameListMap()["APIC"];
+
+                if(!listOfMp3Frames.isEmpty())
+                {
+                    TagLib::ID3v2::FrameList::ConstIterator it = listOfMp3Frames.begin();
+
+                    for(; it != listOfMp3Frames.end() ; it++)
+                    {
+                        TagLib::ID3v2::AttachedPictureFrame* pictureFrame = static_cast<TagLib::ID3v2::AttachedPictureFrame*> (*it);
+
+                        if(pictureFrame)
+                        {
+                            const char*  imageDataBytes = pictureFrame->picture().data();
+                            unsigned int imageDataSize  = pictureFrame->picture().size();
+
+                            QImage coverArtImage = QImage::fromData(QByteArray(imageDataBytes, imageDataSize));
+                            return TrackCoverArt(coverArtImage);
+                        }
+                        else
+                            return TrackCoverArt();
+                    }
+                }
             }
         }
-
-        return tagData;
     }
-    else
-        return TrackTagData();
+
+    return TrackCoverArt();
 }
+
 
 void TrackLoader::play()
 {

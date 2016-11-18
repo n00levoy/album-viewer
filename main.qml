@@ -14,6 +14,21 @@ ApplicationWindow {
     height: 480
     title: qsTr("xD Player")
 
+//    Item {
+//        anchors.fill: parent
+//        width: parent.width
+//        height: parent.height
+//        focus: true
+
+//        Keys.onPressed: {
+//            if(event.key === Qt.Key_Q && (event.modifiers & Qt.ControlModifier))
+//            {
+//                console.log("exit button pressed")
+//                Qt.quit()
+//            }
+//        }
+//    }
+
     DropShadow {
         anchors.fill: textRect
         verticalOffset: 3
@@ -227,7 +242,11 @@ ApplicationWindow {
             }
         }
 
-
-
+        Image {
+            id: coverArt
+            source: "file"
+            width: 80
+            height: 80
+        }
     }
 }

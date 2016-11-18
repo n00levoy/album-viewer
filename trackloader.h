@@ -22,7 +22,8 @@ public:
     Q_INVOKABLE void play();
     Q_INVOKABLE void pause();
 
-    TrackTagData loadTagDataFromFile(const QString fileName);
+    TrackTagData  loadTagDataFromFile (const QString fileName);
+    TrackCoverArt loadCoverArtFromFile(const QString fileName);
 
 private:
     QString filename;
