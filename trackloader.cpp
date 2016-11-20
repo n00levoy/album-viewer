@@ -26,6 +26,8 @@ QString TrackLoader::loadFromFile(QVariant folder)
 
     player->setMedia(QUrl::fromLocalFile(correctedFolderString));
 
+    qApp->
+
     return tagData.getArtist() + " - " + tagData.getTitle();
 }
 

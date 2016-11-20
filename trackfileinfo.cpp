@@ -18,8 +18,8 @@ TrackFileInfo::TrackFileInfo()
 //
 // *********************************************************************************
 
-TrackFileInfo::TrackFileInfo(const QString trackFilePath,        // Размер файла в байтах
-                             const qlonglong trackSizeInBytes    // Путь к файлу (абсолютное имя файла)
+TrackFileInfo::TrackFileInfo(const QString trackFilePath,     // Размер файла в байтах
+                             const qlonglong trackSizeInBytes // Путь к файлу (абсолютное имя файла)
                             )
 {
     m_filePath = trackFilePath;

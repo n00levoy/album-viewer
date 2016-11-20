@@ -242,11 +242,11 @@ ApplicationWindow {
             }
         }
 
-        Image {
-            id: coverArt
-            source: "file"
-            width: 80
-            height: 80
-        }
+//        Image {
+//            id: coverArt
+//            source: "file"
+//            width: 80
+//            height: 80
+//        }
     }
 }

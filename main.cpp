@@ -1,4 +1,4 @@
-#include <QApplication>
+#include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QtQuickControls2>
 
@@ -7,7 +7,7 @@
 int main(int argc, char *argv[])
 {
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-    QApplication app(argc, argv);
+    QGuiApplication app(argc, argv);
     app.setWindowIcon(QIcon(":/images/album-viewer.png"));
 
     QQuickStyle::setStyle("Material");
