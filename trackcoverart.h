@@ -22,7 +22,8 @@ public:
     //  Создание объекта с обложкой
     // *****************************
 
-    TrackCoverArt(const QImage trackCoverArt);
+    TrackCoverArt(const QImage  trackCoverArt,
+                  const QString trackCoverFormat);
 
     // ****************
     //  Методы доступа
@@ -31,8 +32,12 @@ public:
     const QImage getCoverArt();
     void         setCoverArt(const QImage trackCoverArt);
 
+    const QString getCoverFormat();
+    void          setCoverFormat(const QString trackCoverFormat);
+
 private:
-    QImage m_coverArt;  // Обложка альбома
+    QImage  m_coverArt;    // Обложка альбома
+    QString m_imageFormat; // Формат изображения
 };
 
 #endif // TRACKCOVERART_H

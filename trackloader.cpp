@@ -9,8 +9,6 @@
 #include <taglib/id3v2frame.h>
 #include <taglib/tbytevector.h>
 
-#include <QLabel>
-
 TrackLoader::TrackLoader(QObject *parent) : QObject(parent)
 {
     player = new QMediaPlayer(this);
@@ -25,8 +23,6 @@ QString TrackLoader::loadFromFile(QVariant folder)
     TrackCoverArt coverArt = loadCoverArtFromFile(correctedFolderString);
 
     player->setMedia(QUrl::fromLocalFile(correctedFolderString));
-
-    qApp->
 
     return tagData.getArtist() + " - " + tagData.getTitle();
 }
@@ -135,6 +131,19 @@ TrackCoverArt TrackLoader::loadCoverArtFromFile(const QString fileName)
     return TrackCoverArt();
 }
 
+TrackFileInfo TrackLoader::loadFileInfoFromFile(const QString fileName)
+{
+    QFileInfo fileInfo(fileName);
+    if(fileInfo.exists() && !fileInfo.canonicalFilePath().isEmpty())
+    {
+        TrackFileInfo trackFileInfo;
+        trackFileInfo.setFilePath(fileInfo.canonicalFilePath());
+        trackFileInfo.setSizeInBytes(fileInfo.size());
+        return trackFileInfo;
+    }
+    else
+        return TrackFileInfo();
+}
 
 void TrackLoader::play()
 {

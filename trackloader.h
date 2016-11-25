@@ -24,6 +24,8 @@ public:
 
     TrackTagData  loadTagDataFromFile (const QString fileName);
     TrackCoverArt loadCoverArtFromFile(const QString fileName);
+    TrackFileInfo loadFileInfoFromFile(const QString fileName);
+    TrackMetaData loadMetaDataFromFile(const QString fileName);
 
 private:
     QString filename;

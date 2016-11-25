@@ -8,7 +8,8 @@
 
 TrackCoverArt::TrackCoverArt()
 {
-    m_coverArt = QImage();
+    m_coverArt    = QImage();
+    m_imageFormat = QString();
 }
 
 // ***********************************************
@@ -17,9 +18,11 @@ TrackCoverArt::TrackCoverArt()
 //
 // ***********************************************
 
-TrackCoverArt::TrackCoverArt(const QImage trackCoverArt)
+TrackCoverArt::TrackCoverArt(const QImage  trackCoverArt,
+                             const QString trackCoverFormat)
 {
-    m_coverArt = trackCoverArt;
+    m_coverArt    = trackCoverArt;
+    m_imageFormat = trackCoverFormat;
 }
 
 // ******************************************************
@@ -36,4 +39,20 @@ const QImage TrackCoverArt::getCoverArt()
 void TrackCoverArt::setCoverArt(const QImage trackCoverArt)
 {
     m_coverArt = trackCoverArt;
+}
+
+// ***********************************************
+//
+//  Управление полем "Формат обложки-изображения"
+//
+// ***********************************************
+
+const QString TrackCoverArt::setCoverFormat(const QString trackCoverFormat)
+{
+    m_imageFormat = trackCoverFormat;
+}
+
+void TrackCoverArt::getCoverFormat()
+{
+    return m_imageFormat;
 }
