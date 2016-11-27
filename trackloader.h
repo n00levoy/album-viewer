@@ -2,6 +2,7 @@
 #define TRACKLOADER_H
 
 #include "trackinfo.h"
+#include "databasemanager.h"
 
 #include <QVariant>
 #include <QDebug>

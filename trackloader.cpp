@@ -19,10 +19,16 @@ QString TrackLoader::loadFromFile(QVariant folder)
     QString folderString = folder.toString();
     QString correctedFolderString = folderString.replace("file:///", "");
 
+    TrackFileInfo fileInfo = loadFileInfoFromFile(correctedFolderString);
+    TrackMetaData metaData = loadMetaDataFromFile(correctedFolderString);
     TrackTagData  tagData  = loadTagDataFromFile (correctedFolderString);
     TrackCoverArt coverArt = loadCoverArtFromFile(correctedFolderString);
 
-    player->setMedia(QUrl::fromLocalFile(correctedFolderString));
+    TrackInfo info(fileInfo, metaData, tagData, coverArt);
+
+    player->setMedia(QUrl::fromLocalFile(fileInfo.getFilePath()));
+
+    DatabaseManager manager(DatabaseManager::DATABASE_MUSIC);
 
     return tagData.getArtist() + " - " + tagData.getTitle();
 }
@@ -117,8 +123,9 @@ TrackCoverArt TrackLoader::loadCoverArtFromFile(const QString fileName)
                             const char*  imageDataBytes = pictureFrame->picture().data();
                             unsigned int imageDataSize  = pictureFrame->picture().size();
 
-                            QImage coverArtImage = QImage::fromData(QByteArray(imageDataBytes, imageDataSize));
-                            return TrackCoverArt(coverArtImage);
+                            QImage  coverArtImage = QImage::fromData(QByteArray(imageDataBytes, imageDataSize));
+                            QString imageFileType = pictureFrame->mimeType().toCString(true);
+                            return TrackCoverArt(coverArtImage, imageFileType);
                         }
                         else
                             return TrackCoverArt();
@@ -136,13 +143,39 @@ TrackFileInfo TrackLoader::loadFileInfoFromFile(const QString fileName)
     QFileInfo fileInfo(fileName);
     if(fileInfo.exists() && !fileInfo.canonicalFilePath().isEmpty())
     {
+        auto filePath = fileInfo.canonicalFilePath();
+        auto fileSize = fileInfo.size();
+
         TrackFileInfo trackFileInfo;
-        trackFileInfo.setFilePath(fileInfo.canonicalFilePath());
-        trackFileInfo.setSizeInBytes(fileInfo.size());
+        trackFileInfo.setFilePath(filePath);
+        trackFileInfo.setSizeInBytes(fileSize);
         return trackFileInfo;
     }
     else
         return TrackFileInfo();
+}
+
+TrackMetaData TrackLoader::loadMetaDataFromFile(const QString fileName)
+{
+    TagLib::FileRef file(fileName.toLatin1().constData());
+
+    if(!file.isNull())
+    {
+        TagLib::AudioProperties* audioProps = file.audioProperties();
+
+        if(audioProps)
+        {
+            auto bitrate     = audioProps->bitrate();
+            auto channelsNum = audioProps->channels();
+            auto duration    = audioProps->lengthInSeconds();
+            auto sampleRate  = audioProps->sampleRate();
+
+            TrackMetaData metaData(duration, sampleRate, bitrate, channelsNum);
+            return metaData;
+        }
+    }
+
+    return TrackMetaData();
 }
 
 void TrackLoader::play()

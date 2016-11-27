@@ -47,12 +47,12 @@ void TrackCoverArt::setCoverArt(const QImage trackCoverArt)
 //
 // ***********************************************
 
-const QString TrackCoverArt::setCoverFormat(const QString trackCoverFormat)
-{
-    m_imageFormat = trackCoverFormat;
-}
-
-void TrackCoverArt::getCoverFormat()
+const QString TrackCoverArt::getCoverFormat()
 {
     return m_imageFormat;
+}
+
+void TrackCoverArt::setCoverFormat(const QString trackCoverFormat)
+{
+    m_imageFormat = trackCoverFormat;
 }
