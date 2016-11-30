@@ -29,11 +29,11 @@ public:
     //  Методы доступа
     // ****************
 
-    const QImage getCoverArt();
-    void         setCoverArt(const QImage trackCoverArt);
+    QImage getCoverArt() const;
+    void   setCoverArt(const QImage trackCoverArt);
 
-    const QString getCoverFormat();
-    void          setCoverFormat(const QString trackCoverFormat);
+    QString getCoverFormat() const;
+    void    setCoverFormat(const QString trackCoverFormat);
 
 private:
     QImage  m_coverArt;    // Обложка альбома

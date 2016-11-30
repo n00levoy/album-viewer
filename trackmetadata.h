@@ -32,17 +32,17 @@ public:
     //  Методы доступа
     // ****************
 
-    qlonglong getDuration();
+    qlonglong getDuration() const;
     void      setDuration(const qlonglong trackDurationInSeconds);
 
-    qlonglong getSampleRate();
+    qlonglong getSampleRate() const;
     void      setSampleRate(const qlonglong trackSampleRate);
 
 
-    int  getBitrate();
+    int  getBitrate() const;
     void setBitrate(const int trackBitrate);
 
-    int  getChannelsNum();
+    int  getChannelsNum() const;
     void setChannelsNum(const int trackChannelsNum);
 
 private:

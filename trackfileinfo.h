@@ -30,11 +30,11 @@ public:
     //  Методы доступа
     // ****************
 
-    qlonglong getSizeInBytes();
+    qlonglong getSizeInBytes() const;
     void      setSizeInBytes(const qlonglong trackSizeInBytes);
 
-    const QString getFilePath();
-    void          setFilePath(const QString trackFilePath);
+    QString getFilePath() const;
+    void    setFilePath(const QString trackFilePath);
 
 private:
     qlonglong m_sizeInBytes; // Размер файла в байтах

@@ -38,7 +38,7 @@ TrackInfo::TrackInfo(const TrackFileInfo trackFileInfo, // Информация 
 //
 // **********************************
 
-const TrackTagData TrackInfo::getTagData()
+TrackTagData TrackInfo::getTagData() const
 {
     return m_tagData;
 }
@@ -54,7 +54,7 @@ void TrackInfo::setTagData(const TrackTagData newTagData)
 //
 // ***********************************
 
-const TrackMetaData TrackInfo::getMetaData()
+TrackMetaData TrackInfo::getMetaData() const
 {
     return m_metaData;
 }
@@ -71,7 +71,7 @@ void TrackInfo::setMetaData(const TrackMetaData newMetaData)
 // ***************************************
 
 
-const TrackCoverArt TrackInfo::getCoverArt()
+TrackCoverArt TrackInfo::getCoverArt() const
 {
     return m_coverArt;
 }
@@ -87,7 +87,7 @@ void TrackInfo::setCoverArt(const TrackCoverArt newCoverArt)
 //
 // ***************************************
 
-const TrackFileInfo TrackInfo::getFileInfo()
+TrackFileInfo TrackInfo::getFileInfo() const
 {
     return m_fileInfo;
 }

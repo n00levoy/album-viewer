@@ -53,7 +53,7 @@ TrackMetaData::TrackMetaData(const qlonglong trackDuration,   // Длитель�
 //
 // ***************************************
 
-qlonglong TrackMetaData::getDuration()
+qlonglong TrackMetaData::getDuration() const
 {
     return m_durationInSeconds;
 }
@@ -72,7 +72,7 @@ void TrackMetaData::setDuration(const qlonglong trackDurationInSeconds)
 //
 // ************************************
 
-qlonglong TrackMetaData::getSampleRate()
+qlonglong TrackMetaData::getSampleRate() const
 {
     return m_sampleRate;
 }
@@ -91,7 +91,7 @@ void TrackMetaData::setSampleRate(const qlonglong trackSampleRate)
 //
 // **********************************
 
-int TrackMetaData::getBitrate()
+int TrackMetaData::getBitrate() const
 {
     return m_bitrate;
 }
@@ -110,7 +110,7 @@ void TrackMetaData::setBitrate(const int trackBitrate)
 //
 // ***************************************
 
-int TrackMetaData::getChannelsNum()
+int TrackMetaData::getChannelsNum() const
 {
     return m_channelsNum;
 }

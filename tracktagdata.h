@@ -37,32 +37,32 @@ public:
     //  Методы доступа
     // ****************
 
-    const QString getAlbumArtist();
-    void          setAlbumArtist(const QString trackAlbumArtist);
+    QString getAlbumArtist() const;
+    void    setAlbumArtist(const QString trackAlbumArtist);
 
-    const QString getAlbumName();
-    void          setAlbumName(const QString trackAlbumName);
+    QString getAlbumName() const;
+    void    setAlbumName(const QString trackAlbumName);
 
-    const QString getArtist();
-    void          setArtist(const QString trackArtist);
+    QString getArtist() const;
+    void    setArtist(const QString trackArtist);
 
-    const QString getTitle();
-    void          setTitle(const QString trackTitle);
+    QString getTitle() const;
+    void    setTitle(const QString trackTitle);
 
-    const QString getGenre();
-    void          setGenre(const QString trackGenre);
+    QString getGenre() const;
+    void    setGenre(const QString trackGenre);
 
-    const QString getComposer();
-    void          setComposer(const QString trackComposer);
+    QString getComposer() const;
+    void    setComposer(const QString trackComposer);
 
 
-    int  getTrackNumber();
+    int  getTrackNumber() const;
     void setTrackNumber(const int trackNumber);
 
-    int  getYear();
+    int  getYear() const;
     void setYear(const int trackYear);
 
-    int  getDiscNumber();
+    int  getDiscNumber() const;
     void setDiscNumber(const int trackDiscNumber);
 
 private:

@@ -4,6 +4,8 @@
 #include <QtCore>
 #include <QSqlDatabase>
 
+#include "trackinfo.h"
+
 // *********************************************
 //
 //  Класс-менеджер для управления базой данных.
@@ -13,24 +15,15 @@
 class DatabaseManager : public QObject
 {
 public:
-
-    // ********************************
-    //  Перечисление типов баз данных.
-    // ********************************
-    enum databases{DATABASE_ERROR,  // Ошибочный тип
-                   DATABASE_MUSIC}; // База данных для музыки
-
-public:
     // *************************************
     //  Создание пустого объекта-менеджера.
     // *************************************
 
     DatabaseManager();
 
-
-
-    DatabaseManager(int databaseType);
     ~DatabaseManager();
+
+    bool addTrack(const TrackInfo &trackInfo);
 
 private:
     bool prepareTables();

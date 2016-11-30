@@ -2,46 +2,36 @@
 
 #include <QSqlError>
 #include <QSqlQuery>
+#include <QSqlQueryModel>
+#include <QTableView>
 
 DatabaseManager::DatabaseManager()
 {
-    m_database = nullptr;
-}
+    m_database = new QSqlDatabase(QSqlDatabase::addDatabase("QSQLITE"));
+    m_database->setUserName("user");
+    m_database->setHostName("localpc");
+    m_database->setPassword("password");
 
-DatabaseManager::DatabaseManager(int databaseType)
-{
-    if(databaseType)
-    {
-        m_database = new QSqlDatabase(QSqlDatabase::addDatabase("QSQLITE"));
-        m_database->setUserName("user");
-        m_database->setHostName("localpc");
-        m_database->setPassword("password");
+    prepareFolders();
 
-        prepareFolders();
+    QString databaseName = "data/";
+    databaseName += "music";
+    databaseName += ".sqlite";
 
-        QString databaseName = "data/";
-        switch(databaseType)
-        {
-        case DATABASE_MUSIC:
-        {
-            databaseName += "music";
-            break;
-        }
-        default:
-            break;
-        }
-        databaseName += ".sqlite";
+    m_database->setDatabaseName(databaseName);
 
-        m_database->setDatabaseName(databaseName);
-
-        if (!m_database->open())
-            qDebug() << "Cannot open DB: " << m_database->lastError();
-        else
-            prepareTables();
-    }
+    if (!m_database->open())
+        qDebug() << "Cannot open DB: " << m_database->lastError();
     else
-        m_database = nullptr;
+        prepareTables();
 }
+
+// ****************************************************
+//
+//  Деструктор объекта управления базой данных
+//  Освобождение памяти указателя на объект управления
+//
+// ****************************************************
 
 DatabaseManager::~DatabaseManager()
 {
@@ -71,27 +61,19 @@ bool DatabaseManager::prepareTables()
 {
     QSqlQuery query(*m_database);
 
-    // *************************************************
-    //  Создание таблицы Tracks для хранения информации
-    //  о треках в фонотеке.
-    // *************************************************
-
-    QString TracksTableCreationQuery = "CREATE TABLE IF NOT EXISTS Tracks ("
-                                       "TrackID INTEGER PRIMARY KEY"        // Номер трека (ключ)
-                                       ")";
-    query.exec(TracksTableCreationQuery);
-
     // ***************************************************
     //  Создание таблицы FileInfo для хранения информации
     //  о файле: пути к файлу и размера файла.
     // ***************************************************
 
-    QString FileInfoTableCreationQuery = "CREATE TABLE IF NOT EXISTS FileInfo ("
+    QString fileInfoTableCreationQuery = "CREATE TABLE IF NOT EXISTS FileInfo ("
                                          "TrackID  INTEGER PRIMARY KEY, "        // Номер трека (ключ)
-                                         "FilePath TEXT, "                       // Путь к файлу
-                                         "FileSize INTEGER"                      // Размер файла (в байтах)
+                                         "FilePath TEXT    NOT NULL, "           // Путь к файлу
+                                         "FileSize INTEGER NOT NULL"             // Размер файла (в байтах)
                                          ")";
-    query.exec(FileInfoTableCreationQuery);
+    bool fileInfoCreationResult = query.exec(fileInfoTableCreationQuery);
+    if(!fileInfoCreationResult)
+        return false;
 
     // ***************************************************
     //  Создание таблицы MetaData для хранения информации
@@ -99,14 +81,16 @@ bool DatabaseManager::prepareTables()
     //  частоты сэмплов и количества каналов.
     // ***************************************************
 
-    QString MetaDataTableCreationQuery = "CREATE TABLE IF NOT EXISTS MetaData ("
+    QString metaDataTableCreationQuery = "CREATE TABLE IF NOT EXISTS MetaData ("
                                          "TrackID     INTEGER PRIMARY KEY, "     // Номер трека (ключ)
                                          "Duration    INTEGER, "                 // Длительность (в секундах)
                                          "Bitrate     INTEGER, "                 // Битрейт (kbps)
                                          "SampleRate  INTEGER, "                 // Частота сэмплов (hz)
                                          "ChannelsNum INTEGER"                   // Количество каналов
                                          ")";
-    query.exec(MetaDataTableCreationQuery);
+    bool metaDataCreationResult = query.exec(metaDataTableCreationQuery);
+    if(!metaDataCreationResult)
+        return false;
 
     // **********************************************************
     //  Создание таблицы TagData для хранения информации
@@ -114,7 +98,7 @@ bool DatabaseManager::prepareTables()
     //  номера альбома, номера трека, композитора и номера диска.
     // **********************************************************
 
-    QString TagDataTableCreationQuery = "CREATE TABLE IF NOT EXISTS TagData ("
+    QString tagDataTableCreationQuery = "CREATE TABLE IF NOT EXISTS TagData ("
                                         "TrackID     INTEGER PRIMARY KEY, "    // Номер трека (ключ)
                                         "Title       TEXT, "                   // Название трека
                                         "ArtistID    INTEGER, "                // Номер исполнителя (внешний ключ)
@@ -123,7 +107,9 @@ bool DatabaseManager::prepareTables()
                                         "Composer    TEXT, "                   // Композитор
                                         "DiscNumber  INTEGER"                  // Номер диска
                                         ")";
-    query.exec(TagDataTableCreationQuery);
+    bool tagDataCreationResult = query.exec(tagDataTableCreationQuery);
+    if(!tagDataCreationResult)
+        return false;
 
     // ****************************************************************
     //  Создание таблицы TrackStats для хранения информации
@@ -132,14 +118,16 @@ bool DatabaseManager::prepareTables()
     //  времени последнего прослушивания.
     // ****************************************************************
 
-    QString TrackStatsTableCreationQuery = "CREATE TABLE IF NOT EXISTS TrackStats ("
+    QString trackStatsTableCreationQuery = "CREATE TABLE IF NOT EXISTS TrackStats ("
                                            "TrackID         INTEGER PRIMARY KEY, "   // Номер трека (ключ)
                                            "Count           INTEGER, "               // Количество прослушиваний
                                            "Like            BOOL, "                  // Является ли трек понравившимся (стоит ли "лайк")
                                            "FirstTimePlayed DATETIME, "              // Дата-время первого прослушивания
                                            "LastTimePlayed  DATETIME"                // Дата-время последнего прослушивания
                                            ")";
-    query.exec(TrackStatsTableCreationQuery);
+    bool trackStatsCreationResult = query.exec(trackStatsTableCreationQuery);
+    if(!trackStatsCreationResult)
+        return false;
 
     // **********************************************************
     //  Создание таблицы ListenHistory для хранения информации о
@@ -147,12 +135,14 @@ bool DatabaseManager::prepareTables()
     //  даты-времени прослушивания.
     // **********************************************************
 
-    QString ListenHistoryTableCreationQuery = "CREATE TABLE IF NOT EXISTS ListenHistory ("
+    QString listenHistoryTableCreationQuery = "CREATE TABLE IF NOT EXISTS ListenHistory ("
                                               "PlayID   INTEGER PRIMARY KEY, "             // Номер прослушивания (ключ)
                                               "TrackID  INTEGER, "                         // Номер трека (внешний ключ)
                                               "DateTime DATETIME"                          // Дата-время прослушивания
                                               ")";
-    query.exec(ListenHistoryTableCreationQuery);
+    bool listenHistoryCreationResult = query.exec(listenHistoryTableCreationQuery);
+    if(!listenHistoryCreationResult)
+        return false;
 
     // ****************************************************
     //  Создание таблицы Artist для хранения информации об
@@ -160,14 +150,16 @@ bool DatabaseManager::prepareTables()
     //  в котором он исполняет, и номера фотографии.
     // ****************************************************
 
-    QString ArtistTableCreationQuery = "CREATE TABLE IF NOT EXISTS Artist ("
+    QString artistTableCreationQuery = "CREATE TABLE IF NOT EXISTS Artist ("
                                        "ArtistID INTEGER PRIMARY KEY, "      // Номер исполнителя (ключ)
                                        "Name     TEXT, "                     // Имя исполнителя
                                        "Bio      TEXT, "                     // Биография
                                        "Genre    TEXT, "                     // Основной жанр (стиль)
                                        "PhotoID  INTEGER"                    // Номер фотографии (внешний ключ)
                                        ")";
-    query.exec(ArtistTableCreationQuery);
+    bool artistCreationResult = query.exec(artistTableCreationQuery);
+    if(!artistCreationResult)
+        return false;
 
     // ******************************************************
     //  Создание таблицы ArtistStats для хранения информации
@@ -176,13 +168,15 @@ bool DatabaseManager::prepareTables()
     //  прослушивания.
     // ******************************************************
 
-    QString ArtistStatsTableCreationQuery = "CREATE TABLE IF NOT EXISTS ArtistStats ("
+    QString artistStatsTableCreationQuery = "CREATE TABLE IF NOT EXISTS ArtistStats ("
                                             "ArtistID        INTEGER PRIMARY KEY, "    // Номер исполнителя (ключ)
                                             "Count           INTEGER, "                // Количество прослушиваний
                                             "FirstTimePlayed DATETIME, "               // Дата-время первого прослушивания
                                             "LastTimePlayed  DATETIME"                 // Дата-время последнего прослушивания
                                             ")";
-    query.exec(ArtistStatsTableCreationQuery);
+    bool artistStatsCreationResult = query.exec(artistStatsTableCreationQuery);
+    if(!artistStatsCreationResult)
+        return false;
 
     // ***********************************************************
     //  Создание таблицы Photos для хранения информации
@@ -190,7 +184,7 @@ bool DatabaseManager::prepareTables()
     //  размера файла, формата изображения и размера изображения.
     // ***********************************************************
 
-    QString PhotosTableCreationQuery = "CREATE TABLE IF NOT EXISTS Photos ("
+    QString photosTableCreationQuery = "CREATE TABLE IF NOT EXISTS Photos ("
                                        "PhotoID     INTEGER PRIMARY KEY, "   // Номер фотографии (ключ)
                                        "FilePath    TEXT, "                  // Путь к файлу
                                        "FileSize    INTEGER, "               // Размер файла
@@ -198,7 +192,9 @@ bool DatabaseManager::prepareTables()
                                        "ImageHeight INTEGER, "               // Высота изображения
                                        "ImageWidth  INTEGER"                 // Ширина изображения
                                        ")";
-    query.exec(PhotosTableCreationQuery);
+    bool photosCreationResult = query.exec(photosTableCreationQuery);
+    if(!photosCreationResult)
+        return false;
 
     // ************************************************************
     //  Создание таблицы Album для хранения информации об альбоме:
@@ -207,7 +203,7 @@ bool DatabaseManager::prepareTables()
     //  номера обложки.
     // ************************************************************
 
-    QString AlbumTableCreationQuery = "CREATE TABLE IF NOT EXISTS Album ("
+    QString albumTableCreationQuery = "CREATE TABLE IF NOT EXISTS Album ("
                                       "AlbumID      INTEGER PRIMARY KEY, " // Номер альбома (ключ)
                                       "ArtistID     INTEGER, "             // Номер исполнителя альбома (внешний ключ)
                                       "Duration     INTEGER, "             // Длительность альбома
@@ -217,7 +213,9 @@ bool DatabaseManager::prepareTables()
                                       "DiscsNumber  INTEGER, "             // Количество дисков
                                       "CoverID      INTEGER"               // Номер обложки альбома
                                       ")";
-    query.exec(AlbumTableCreationQuery);
+    bool albumCreationResult = query.exec(albumTableCreationQuery);
+    if(!albumCreationResult)
+        return false;
 
     // **********************************************************
     //  Создание таблицы AlbumStats для хранения информации о
@@ -225,13 +223,15 @@ bool DatabaseManager::prepareTables()
     //  первого прослушивания, времени последнего прослушивания.
     // **********************************************************
 
-    QString AlbumStatsTableCreationQuery = "CREATE TABLE IF NOT EXISTS AlbumStats ("
+    QString albumStatsTableCreationQuery = "CREATE TABLE IF NOT EXISTS AlbumStats ("
                                            "AlbumID         INTEGER PRIMARY KEY, "   // Номер альбома (ключ)
                                            "Count           INTEGER, "               // Количество прослушиваний
                                            "FirstTimePlayed DATETIME, "              // Дата-время первого прослушивания
                                            "LastTimePlayed  DATETIME"                // Дата-время последнего прослушивания
                                            ")";
-    query.exec(AlbumStatsTableCreationQuery);
+    bool albumStatsCreationResult = query.exec(albumStatsTableCreationQuery);
+    if(!albumStatsCreationResult)
+        return false;
 
     // **********************************************************
     //  Создание таблицы CoverArt для хранения информации об
@@ -239,7 +239,7 @@ bool DatabaseManager::prepareTables()
     //  формата изображения и размера изображения.
     // **********************************************************
 
-    QString CoverArtTableCreationQuery = "CREATE TABLE IF NOT EXISTS CoverArt ("
+    QString coverArtTableCreationQuery = "CREATE TABLE IF NOT EXISTS CoverArt ("
                                          "AlbumID     INTEGER PRIMARY KEY, "     // Номер альбома (ключ)
                                          "FilePath    TEXT, "                    // Путь к файлу
                                          "FileSize    INTEGER, "                 // Размер файла
@@ -247,7 +247,52 @@ bool DatabaseManager::prepareTables()
                                          "ImageHeight INTEGER, "                 // Высота изображения
                                          "ImageWidth  INTEGER"                   // Ширина изображения
                                          ")";
-    query.exec(CoverArtTableCreationQuery);
+    bool coverArtCreationResult = query.exec(coverArtTableCreationQuery);
+    if(!coverArtCreationResult)
+        return false;
+
+    return true;
+}
+
+// ******************************************************************
+//
+//  Подготовка директорий на диске для работы с базой данных
+//  (проверка существования директории и её создание при отсутствии)
+//
+// ******************************************************************
+
+bool DatabaseManager::addTrack(const TrackInfo &trackInfo)
+{
+    QSqlQuery query(*m_database);
+
+    TrackFileInfo fileInfo = trackInfo.getFileInfo();
+    auto filePath = fileInfo.getFilePath();
+    auto fileSize = fileInfo.getSizeInBytes();
+    QString fileInfoInsertQuery = "INSERT INTO FileInfo (FilePath, FileSize) VALUES ('%1', %2)";
+    fileInfoInsertQuery = fileInfoInsertQuery.arg(filePath)
+                                             .arg(fileSize);
+    query.exec(fileInfoInsertQuery);
+
+    TrackMetaData metaData = trackInfo.getMetaData();
+    auto duration    = metaData.getDuration();
+    auto bitrate     = metaData.getBitrate();
+    auto sampleRate  = metaData.getSampleRate();
+    auto channelsNum = metaData.getChannelsNum();
+    QString metaDataInsertQuery = "INSERT INTO MetaData (Duration, Bitrate, SampleRate, ChannelsNum) VALUES (%1, %2, %3, %4)";
+    metaDataInsertQuery = metaDataInsertQuery.arg(duration)
+                                             .arg(bitrate)
+                                             .arg(sampleRate)
+                                             .arg(channelsNum);
+    query.exec(metaDataInsertQuery);
+
+//    QTableView *view = new QTableView;
+//    view->setAttribute(Qt::WA_DeleteOnClose);
+//    QSqlQueryModel* model = new QSqlQueryModel(view);
+//    model->setQuery("SELECT * FROM FileInfo");
+//    view->setModel(model);
+//    view->show();
+
+    return true;
 }
 
 bool DatabaseManager::prepareFolders()

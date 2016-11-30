@@ -66,7 +66,7 @@ TrackTagData::TrackTagData(const QString trackTitle,       // Название �
 //
 // ****************************************
 
-const QString TrackTagData::getAlbumArtist()
+QString TrackTagData::getAlbumArtist() const
 {
     return m_albumArtist;
 }
@@ -82,7 +82,7 @@ void TrackTagData::setAlbumArtist(const QString trackAlbumArtist)
 //
 // ***************************
 
-const QString TrackTagData::getAlbumName()
+QString TrackTagData::getAlbumName() const
 {
     return m_albumName;
 }
@@ -98,7 +98,7 @@ void TrackTagData::setAlbumName(const QString trackAlbumName)
 //
 // ********************************
 
-const QString TrackTagData::getArtist()
+QString TrackTagData::getArtist() const
 {
     return m_artist;
 }
@@ -114,7 +114,7 @@ void TrackTagData::setArtist(const QString trackArtist)
 //
 // *****************************
 
-const QString TrackTagData::getTitle()
+QString TrackTagData::getTitle() const
 {
     return m_title;
 }
@@ -130,7 +130,7 @@ void TrackTagData::setTitle(const QString trackTitle)
 //
 // *************************
 
-const QString TrackTagData::getGenre()
+QString TrackTagData::getGenre() const
 {
     return m_genre;
 }
@@ -146,7 +146,7 @@ void TrackTagData::setGenre(const QString trackGenre)
 //
 // *******************************
 
-const QString TrackTagData::getComposer()
+QString TrackTagData::getComposer() const
 {
     return m_composer;
 }
@@ -162,7 +162,7 @@ void TrackTagData::setComposer(const QString trackComposer)
 //
 // **************************
 
-int TrackTagData::getTrackNumber()
+int TrackTagData::getTrackNumber() const
 {
     return m_trackNumber;
 }
@@ -181,7 +181,7 @@ void TrackTagData::setTrackNumber(const int trackNumber)
 //
 // ************************
 
-int TrackTagData::getYear()
+int TrackTagData::getYear() const
 {
     return m_year;
 }
@@ -197,7 +197,7 @@ void TrackTagData::setYear(const int trackYear)
 //
 // ********************************
 
-int TrackTagData::getDiscNumber()
+int TrackTagData::getDiscNumber() const
 {
     return m_discNumber;
 }

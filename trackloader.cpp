@@ -28,7 +28,8 @@ QString TrackLoader::loadFromFile(QVariant folder)
 
     player->setMedia(QUrl::fromLocalFile(fileInfo.getFilePath()));
 
-    DatabaseManager manager(DatabaseManager::DATABASE_MUSIC);
+    DatabaseManager manager;
+    manager.addTrack(info);
 
     return tagData.getArtist() + " - " + tagData.getTitle();
 }

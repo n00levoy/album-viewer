@@ -31,7 +31,7 @@ TrackCoverArt::TrackCoverArt(const QImage  trackCoverArt,
 //
 // ******************************************************
 
-const QImage TrackCoverArt::getCoverArt()
+QImage TrackCoverArt::getCoverArt() const
 {
     return m_coverArt;
 }
@@ -47,7 +47,7 @@ void TrackCoverArt::setCoverArt(const QImage trackCoverArt)
 //
 // ***********************************************
 
-const QString TrackCoverArt::getCoverFormat()
+QString TrackCoverArt::getCoverFormat() const
 {
     return m_imageFormat;
 }

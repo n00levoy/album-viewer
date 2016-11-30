@@ -36,7 +36,7 @@ TrackFileInfo::TrackFileInfo(const QString trackFilePath,     // Размер ф
 //
 // ******************************************
 
-qlonglong TrackFileInfo::getSizeInBytes()
+qlonglong TrackFileInfo::getSizeInBytes() const
 {
     return m_sizeInBytes;
 }
@@ -55,7 +55,7 @@ void TrackFileInfo::setSizeInBytes(const qlonglong trackSizeInBytes)
 //
 // ********************************************************
 
-const QString TrackFileInfo::getFilePath()
+QString TrackFileInfo::getFilePath() const
 {
     return m_filePath;
 }

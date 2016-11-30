@@ -35,17 +35,17 @@ public:
     //  Методы доступа
     // ****************
 
-    const TrackFileInfo getFileInfo();
-    void                setFileInfo(const TrackFileInfo newFileInfo);
+    TrackFileInfo getFileInfo() const;
+    void          setFileInfo(const TrackFileInfo newFileInfo);
 
-    const TrackTagData getTagData();
-    void               setTagData(const TrackTagData newTagData);
+    TrackTagData getTagData() const;
+    void         setTagData(const TrackTagData newTagData);
 
-    const TrackMetaData getMetaData();
-    void                setMetaData(const TrackMetaData newMetaData);
+    TrackMetaData getMetaData() const;
+    void          setMetaData(const TrackMetaData newMetaData);
 
-    const TrackCoverArt getCoverArt();
-    void                setCoverArt(const TrackCoverArt newCoverArt);
+    TrackCoverArt getCoverArt() const;
+    void          setCoverArt(const TrackCoverArt newCoverArt);
 
 private:
     TrackFileInfo m_fileInfo;   // Общая информация о аудиофайле (размер файла, путь к файлу)
