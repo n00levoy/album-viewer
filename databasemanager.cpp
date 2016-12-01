@@ -179,21 +179,21 @@ bool DatabaseManager::prepareTables()
         return false;
 
     // ***********************************************************
-    //  Создание таблицы Photos для хранения информации
+    //  Создание таблицы ArtistPhoto для хранения информации
     //  о фотографии исполнителя: пути к файлу фотографии,
     //  размера файла, формата изображения и размера изображения.
     // ***********************************************************
 
-    QString photosTableCreationQuery = "CREATE TABLE IF NOT EXISTS Photos ("
-                                       "PhotoID     INTEGER PRIMARY KEY, "   // Номер фотографии (ключ)
-                                       "FilePath    TEXT, "                  // Путь к файлу
-                                       "FileSize    INTEGER, "               // Размер файла
-                                       "Format      TEXT, "                  // Формат изображения
-                                       "ImageHeight INTEGER, "               // Высота изображения
-                                       "ImageWidth  INTEGER"                 // Ширина изображения
-                                       ")";
-    bool photosCreationResult = query.exec(photosTableCreationQuery);
-    if(!photosCreationResult)
+    QString artistPhotoTableCreationQuery = "CREATE TABLE IF NOT EXISTS ArtistPhoto ("
+                                            "PhotoID     INTEGER PRIMARY KEY, "         // Номер фотографии (ключ)
+                                            "FilePath    TEXT, "                        // Путь к файлу
+                                            "FileSize    INTEGER, "                     // Размер файла
+                                            "Format      TEXT, "                        // Формат изображения
+                                            "ImageHeight INTEGER, "                     // Высота изображения
+                                            "ImageWidth  INTEGER"                       // Ширина изображения
+                                            ")";
+    bool artistPhotoCreationResult = query.exec(artistPhotoTableCreationQuery);
+    if(!artistPhotoCreationResult)
         return false;
 
     // ************************************************************
@@ -263,34 +263,17 @@ bool DatabaseManager::prepareTables()
 
 bool DatabaseManager::addTrack(const TrackInfo &trackInfo)
 {
-    QSqlQuery query(*m_database);
+    insertFileInfo(trackInfo.getFileInfo());
+    insertMetaData(trackInfo.getMetaData());
 
-    TrackFileInfo fileInfo = trackInfo.getFileInfo();
-    auto filePath = fileInfo.getFilePath();
-    auto fileSize = fileInfo.getSizeInBytes();
-    QString fileInfoInsertQuery = "INSERT INTO FileInfo (FilePath, FileSize) VALUES ('%1', %2)";
-    fileInfoInsertQuery = fileInfoInsertQuery.arg(filePath)
-                                             .arg(fileSize);
-    query.exec(fileInfoInsertQuery);
 
-    TrackMetaData metaData = trackInfo.getMetaData();
-    auto duration    = metaData.getDuration();
-    auto bitrate     = metaData.getBitrate();
-    auto sampleRate  = metaData.getSampleRate();
-    auto channelsNum = metaData.getChannelsNum();
-    QString metaDataInsertQuery = "INSERT INTO MetaData (Duration, Bitrate, SampleRate, ChannelsNum) VALUES (%1, %2, %3, %4)";
-    metaDataInsertQuery = metaDataInsertQuery.arg(duration)
-                                             .arg(bitrate)
-                                             .arg(sampleRate)
-                                             .arg(channelsNum);
-    query.exec(metaDataInsertQuery);
 
-//    QTableView *view = new QTableView;
-//    view->setAttribute(Qt::WA_DeleteOnClose);
-//    QSqlQueryModel* model = new QSqlQueryModel(view);
-//    model->setQuery("SELECT * FROM FileInfo");
-//    view->setModel(model);
-//    view->show();
+    QTableView *view = new QTableView;
+    view->setAttribute(Qt::WA_DeleteOnClose);
+    QSqlQueryModel* model = new QSqlQueryModel(view);
+    model->setQuery("SELECT * FROM FileInfo INNER JOIN MetaData ON FileInfo.TrackID = MetaData.TrackID");
+    view->setModel(model);
+    view->show();
 
     return true;
 }
@@ -303,4 +286,109 @@ bool DatabaseManager::prepareFolders()
         return currentDirectory.mkdir("data");
     else
         return true;
+}
+
+bool DatabaseManager::insertFileInfo(const TrackFileInfo &fileInfo)
+{
+    QSqlQuery query(*m_database);
+
+    auto filePath = fileInfo.getFilePath();
+    auto fileSize = fileInfo.getSizeInBytes();
+    QString fileInfoInsertQuery = "INSERT INTO FileInfo (FilePath, FileSize) VALUES ('%1', %2)";
+    fileInfoInsertQuery = fileInfoInsertQuery.arg(filePath)
+                                             .arg(fileSize);
+    bool result = query.exec(fileInfoInsertQuery);
+
+    return result;
+}
+
+bool DatabaseManager::insertMetaData(const TrackMetaData &metaData)
+{
+    QSqlQuery query(*m_database);
+
+    auto duration    = metaData.getDuration();
+    auto bitrate     = metaData.getBitrate();
+    auto sampleRate  = metaData.getSampleRate();
+    auto channelsNum = metaData.getChannelsNum();
+    QString metaDataInsertQuery = "INSERT INTO MetaData (Duration, Bitrate, SampleRate, ChannelsNum) VALUES (%1, %2, %3, %4)";
+    metaDataInsertQuery = metaDataInsertQuery.arg(duration)
+                                             .arg(bitrate)
+                                             .arg(sampleRate)
+                                             .arg(channelsNum);
+    bool result = query.exec(metaDataInsertQuery);
+
+    return result;
+}
+
+bool DatabaseManager::insertTagData(const TrackTagData &tagData)
+{
+    QSqlQuery query(*m_database);
+
+    auto title       = tagData.getTitle();
+    auto artistName  = tagData.getArtist();
+    auto album       = tagData.getAlbumName();
+    auto trackNumber = tagData.getTrackNumber();
+    auto year        = tagData.getYear();
+    auto genre       = tagData.getGenre();
+    auto albumArtist = tagData.getAlbumArtist();
+    auto composer    = tagData.getComposer();
+    auto discNumber  = tagData.getDiscNumber();
+
+    int artistID = findArtist(artistName);
+    if(artistID)
+    {
+        Artist artist(artistName);
+        artistID = insertArtist(artist);
+    }
+
+    int albumArtistID = findArtist(albumArtist);
+    if(albumArtistID)
+    {
+        Artist artist(albumArtist);
+        albumArtistID = insertArtist(artist);
+    }
+
+    int albumID = findAlbum(album, artistName);
+    if(albumID)
+        albumID = insertAlbum(album);
+
+    QString tagDataInsertQuery = "INSERT INTO TagData (Title, ArtistID, AlbumID, TrackNumber, Composer, DiscNumber) "
+                                  "VALUES ('%1', %2, %3, %4, '%5', %6)";
+    tagDataInsertQuery = tagDataInsertQuery.arg(title)
+                                           .arg(artistID)
+                                           .arg(albumID)
+                                           .arg(trackNumber)
+                                           .arg(composer)
+                                           .arg(discNumber);
+    bool result = query.exec(tagDataInsertQuery);
+
+    return result;
+}
+
+int DatabaseManager::findArtist(const QString artistName)
+{
+    QSqlQuery query(*m_database);
+
+    return 0;
+}
+
+int DatabaseManager::insertArtist(const Artist artist)
+{
+    QSqlQuery query(*m_database);
+
+    return 0;
+}
+
+int DatabaseManager::findAlbum(const QString album, const QString artist)
+{
+    QSqlQuery query(*m_database);
+
+    return 0;
+}
+
+int DatabaseManager::insertAlbum(const QString album)
+{
+    QSqlQuery query(*m_database);
+
+    return 0;
 }

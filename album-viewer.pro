@@ -8,7 +8,8 @@ SOURCES += main.cpp \
     trackcoverart.cpp \
     trackmetadata.cpp \
     trackfileinfo.cpp \
-    databasemanager.cpp
+    databasemanager.cpp \
+    artist.cpp
 
 RESOURCES += qml.qrc
 
@@ -37,4 +38,5 @@ HEADERS += \
     trackcoverart.h \
     trackmetadata.h \
     trackfileinfo.h \
-    databasemanager.h
+    databasemanager.h \
+    artist.h
