@@ -22,7 +22,7 @@ QString TrackLoader::loadFromFile(QVariant folder)
     TrackFileInfo fileInfo = loadFileInfoFromFile(correctedFolderString);
     TrackMetaData metaData = loadMetaDataFromFile(correctedFolderString);
     TrackTagData  tagData  = loadTagDataFromFile (correctedFolderString);
-    TrackCoverArt coverArt = loadCoverArtFromFile(correctedFolderString);
+    MusicImage coverArt    = loadCoverArtFromFile(correctedFolderString);
 
     TrackInfo info(fileInfo, metaData, tagData, coverArt);
 
@@ -97,7 +97,7 @@ TrackTagData TrackLoader::loadTagDataFromFile(const QString fileName)
     return TrackTagData();
 }
 
-TrackCoverArt TrackLoader::loadCoverArtFromFile(const QString fileName)
+MusicImage TrackLoader::loadCoverArtFromFile(const QString fileName)
 {
     if(fileName.endsWith(".mp3"))
     {
@@ -126,17 +126,17 @@ TrackCoverArt TrackLoader::loadCoverArtFromFile(const QString fileName)
 
                             QImage  coverArtImage = QImage::fromData(QByteArray(imageDataBytes, imageDataSize));
                             QString imageFileType = pictureFrame->mimeType().toCString(true);
-                            return TrackCoverArt(coverArtImage, imageFileType);
+                            return MusicImage(coverArtImage, imageFileType);
                         }
                         else
-                            return TrackCoverArt();
+                            return MusicImage();
                     }
                 }
             }
         }
     }
 
-    return TrackCoverArt();
+    return MusicImage();
 }
 
 TrackFileInfo TrackLoader::loadFileInfoFromFile(const QString fileName)

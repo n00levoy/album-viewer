@@ -4,7 +4,7 @@
 #include "trackfileinfo.h"
 #include "tracktagdata.h"
 #include "trackmetadata.h"
-#include "trackcoverart.h"
+#include "musicimage.h"
 
 // *****************************************
 //
@@ -28,7 +28,7 @@ public:
     TrackInfo(const TrackFileInfo trackFileInfo,                    // Инфомарция о файле
               const TrackMetaData trackMetaData = TrackMetaData(),  // Мета-данные
               const TrackTagData  trackTagData  = TrackTagData(),   // ID3v2 тег-данные
-              const TrackCoverArt trackCoverArt = TrackCoverArt()   // Обложка альбома
+              const MusicImage    trackCoverArt = MusicImage()   // Обложка альбома
              );
 
     // ****************
@@ -44,14 +44,14 @@ public:
     TrackMetaData getMetaData() const;
     void          setMetaData(const TrackMetaData newMetaData);
 
-    TrackCoverArt getCoverArt() const;
-    void          setCoverArt(const TrackCoverArt newCoverArt);
+    MusicImage getCoverArt() const;
+    void       setCoverArt(const MusicImage newCoverArt);
 
 private:
     TrackFileInfo m_fileInfo;   // Общая информация о аудиофайле (размер файла, путь к файлу)
     TrackMetaData m_metaData;   // Мета-данные аудиофайла (длительность, битрейт, частота сэмплов, количество каналов)
     TrackTagData  m_tagData;    // ID3v2 тег-данные
-    TrackCoverArt m_coverArt;   // Обложка альбома
+    MusicImage    m_coverArt;   // Обложка альбома
 
 };
 

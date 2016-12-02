@@ -5,11 +5,11 @@ SOURCES += main.cpp \
     trackinfo.cpp \
     trackloader.cpp \
     tracktagdata.cpp \
-    trackcoverart.cpp \
     trackmetadata.cpp \
     trackfileinfo.cpp \
     databasemanager.cpp \
-    artist.cpp
+    artist.cpp \
+    musicimage.cpp
 
 RESOURCES += qml.qrc
 
@@ -35,8 +35,8 @@ HEADERS += \
     trackinfo.h \
     trackloader.h \
     tracktagdata.h \
-    trackcoverart.h \
     trackmetadata.h \
     trackfileinfo.h \
     databasemanager.h \
-    artist.h
+    artist.h \
+    musicimage.h

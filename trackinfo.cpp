@@ -11,7 +11,7 @@ TrackInfo::TrackInfo()
     m_fileInfo = TrackFileInfo();
     m_metaData = TrackMetaData();
     m_tagData  = TrackTagData();
-    m_coverArt = TrackCoverArt();
+    m_coverArt = MusicImage();
 }
 
 // *********************************************************
@@ -23,7 +23,7 @@ TrackInfo::TrackInfo()
 TrackInfo::TrackInfo(const TrackFileInfo trackFileInfo, // Информация о файле
                      const TrackMetaData trackMetaData, // Мета-данные
                      const TrackTagData  trackTagData,  // ID3v2 тег-данные
-                     const TrackCoverArt trackCoverArt  // Обложка альбома
+                     const MusicImage    trackCoverArt  // Обложка альбома
                     )
 {
     m_fileInfo = trackFileInfo;
@@ -71,21 +71,21 @@ void TrackInfo::setMetaData(const TrackMetaData newMetaData)
 // ***************************************
 
 
-TrackCoverArt TrackInfo::getCoverArt() const
+MusicImage TrackInfo::getCoverArt() const
 {
     return m_coverArt;
 }
 
-void TrackInfo::setCoverArt(const TrackCoverArt newCoverArt)
+void TrackInfo::setCoverArt(const MusicImage newCoverArt)
 {
     m_coverArt = newCoverArt;
 }
 
-// ***************************************
+// ******************************************
 //
-//  Управление полем "Информация о файле"
+//  Управление объектом "Информация о файле"
 //
-// ***************************************
+// ******************************************
 
 TrackFileInfo TrackInfo::getFileInfo() const
 {

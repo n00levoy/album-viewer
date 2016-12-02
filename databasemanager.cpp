@@ -3,6 +3,7 @@
 #include <QSqlError>
 #include <QSqlQuery>
 #include <QSqlQueryModel>
+#include <QSqlRecord>
 #include <QTableView>
 
 DatabaseManager::DatabaseManager()
@@ -50,7 +51,7 @@ DatabaseManager::~DatabaseManager()
 //  - ListenHistory;
 //  - Artist;
 //  - ArtistStats;
-//  - Photos;
+//  - ArtistPhoto;
 //  - Album;
 //  - AlbumStats;
 //  - CoverArt.
@@ -60,6 +61,26 @@ DatabaseManager::~DatabaseManager()
 bool DatabaseManager::prepareTables()
 {
     QSqlQuery query(*m_database);
+
+    // **************************************************
+    //  Создание таблицы Tracks для хранения информации
+    //  о всех добавляемых в библиотеку треках: названия
+    //  трека, исполнителя, альбома, номера трека, даты
+    //  добавления и даты удаления.
+    // **************************************************
+
+    QString tracksTableCreationQuery = "CREATE TABLE IF NOT EXISTS Tracks ("
+                                        "TrackID     INTEGER PRIMARY KEY, "  // Номер трека (ключ)
+                                        "Name        TEXT, "                 // Название трека
+                                        "Artist      TEXT, "                 // Имя исполнителя
+                                        "Album       TEXT, "                 // Название альбома
+                                        "TrackNumber INTEGER, "              // Номер трека
+                                        "AddDate     DATE, "                 // Дата добавления
+                                        "DeleteDate  DATE"                   // Дата удаления
+                                        ")";
+    bool tracksCreationResult = query.exec(tracksTableCreationQuery);
+    if(!tracksCreationResult)
+        return false;
 
     // ***************************************************
     //  Создание таблицы FileInfo для хранения информации
@@ -254,29 +275,36 @@ bool DatabaseManager::prepareTables()
     return true;
 }
 
-// ******************************************************************
+// *******************************************************************
 //
-//  Подготовка директорий на диске для работы с базой данных
-//  (проверка существования директории и её создание при отсутствии)
+//  Добавление трека в библиотеку с заполнением всех необходимых
+//  таблиц (создание исполнителей, альбомов, сохранение изображений).
 //
-// ******************************************************************
+// *******************************************************************
 
 bool DatabaseManager::addTrack(const TrackInfo &trackInfo)
 {
     insertFileInfo(trackInfo.getFileInfo());
     insertMetaData(trackInfo.getMetaData());
-
-
+    insertTagData (trackInfo.getTagData());
+    insertTrackStats();
 
     QTableView *view = new QTableView;
     view->setAttribute(Qt::WA_DeleteOnClose);
     QSqlQueryModel* model = new QSqlQueryModel(view);
-    model->setQuery("SELECT * FROM FileInfo INNER JOIN MetaData ON FileInfo.TrackID = MetaData.TrackID");
+    model->setQuery("SELECT * FROM TrackStats");
     view->setModel(model);
     view->show();
 
     return true;
 }
+
+// *******************************************************************
+//
+//  Подготовка директорий на диске для работы с базой данных
+//  (проверка существования директории и её создание при отсутствии).
+//
+// *******************************************************************
 
 bool DatabaseManager::prepareFolders()
 {
@@ -320,6 +348,20 @@ bool DatabaseManager::insertMetaData(const TrackMetaData &metaData)
     return result;
 }
 
+bool DatabaseManager::insertTrackStats()
+{
+    QSqlQuery query(*m_database);
+
+    QString trackStatsInsertQuery = "INSERT INTO TrackStats (Count, Like, FirstTimePlayed, LastTimePlayed) VALUES (%1, %2, %3, %4)";
+    trackStatsInsertQuery = trackStatsInsertQuery.arg(0)
+                                                 .arg(0)
+                                                 .arg(0)
+                                                 .arg(0);
+    bool result = query.exec(trackStatsInsertQuery);
+
+    return result;
+}
+
 bool DatabaseManager::insertTagData(const TrackTagData &tagData)
 {
     QSqlQuery query(*m_database);
@@ -335,14 +377,14 @@ bool DatabaseManager::insertTagData(const TrackTagData &tagData)
     auto discNumber  = tagData.getDiscNumber();
 
     int artistID = findArtist(artistName);
-    if(artistID)
+    if(!artistID)
     {
         Artist artist(artistName);
         artistID = insertArtist(artist);
     }
 
     int albumArtistID = findArtist(albumArtist);
-    if(albumArtistID)
+    if(!albumArtistID)
     {
         Artist artist(albumArtist);
         albumArtistID = insertArtist(artist);
@@ -353,7 +395,7 @@ bool DatabaseManager::insertTagData(const TrackTagData &tagData)
         albumID = insertAlbum(album);
 
     QString tagDataInsertQuery = "INSERT INTO TagData (Title, ArtistID, AlbumID, TrackNumber, Composer, DiscNumber) "
-                                  "VALUES ('%1', %2, %3, %4, '%5', %6)";
+                                 "VALUES ('%1', %2, %3, %4, '%5', %6)";
     tagDataInsertQuery = tagDataInsertQuery.arg(title)
                                            .arg(artistID)
                                            .arg(albumID)
@@ -369,14 +411,101 @@ int DatabaseManager::findArtist(const QString artistName)
 {
     QSqlQuery query(*m_database);
 
-    return 0;
+    QString queryText = "SELECT * FROM Artist Where Name = '%1'";
+    queryText = queryText.arg(artistName);
+    bool queryResult = query.exec(queryText);
+    if(!queryResult)
+        return 0;
+
+    int artistIDFieldNumber = query.record().indexOf("ArtistID");
+    int artistID = 0;
+    while(query.next())
+        artistID = query.value(artistIDFieldNumber).toInt();
+
+    return artistID;
 }
 
 int DatabaseManager::insertArtist(const Artist artist)
 {
     QSqlQuery query(*m_database);
 
-    return 0;
+    auto       artistName  = artist.getName();
+    auto       biography   = artist.getBiography();
+    auto       genre       = artist.getGenre();
+    MusicImage photo       = artist.getPhoto();
+
+    int photoID = insertArtistPhoto();
+
+    QString artistInsertQuery = "INSERT INTO Artist (Name, Bio, Genre, PhotoID) "
+                                "VALUES ('%1', '%2', '%3', %4)";
+    artistInsertQuery = artistInsertQuery.arg(artistName)
+                                         .arg(biography)
+                                         .arg(genre)
+                                         .arg(0);
+    bool result = query.exec(artistInsertQuery);
+
+    if(result)
+    {
+        int artistID = findArtist(artistName);
+        insertArtistStats();
+
+
+        return artistID;
+    }
+
+    return result;
+}
+
+bool DatabaseManager::insertArtistStats()
+{
+    QSqlQuery query(*m_database);
+
+    QString artistStatsInsertQuery = "INSERT INTO ArtistStats (Count, FirstTimePlayed, LastTimePlayed) VALUES (%1, %2, %3)";
+    artistStatsInsertQuery = artistStatsInsertQuery.arg(0)
+                                                   .arg(0)
+                                                   .arg(0);
+    bool result = query.exec(artistStatsInsertQuery);
+
+    return result;
+}
+
+int DatabaseManager::insertArtistPhoto(const MusicImage artistPhoto)
+{
+    QSqlQuery query(*m_database);
+
+    QString   filePath;
+    qlonglong fileSize;
+    QString   format;
+    int       height;
+    int       width;
+
+    if(artistPhoto != MusicImage())
+    {
+        QImage photo = artistPhoto.getImage();
+    }
+    else
+    {
+        filePath = QString();
+        fileSize = 0;
+        format   = QString();
+        height   = 0;
+        width    = 0;
+    }
+
+    QString artistPhotoInsertQuery = "INSERT INTO ArtistPhoto (FilePath, FileSize, Format, ImageHeight, ImageWidth) "
+                                     "VALUES (%1, %2, %3, %4, %5)";
+    artistPhotoInsertQuery = artistPhotoInsertQuery.arg(filePath)
+                                                   .arg(fileSize)
+                                                   .arg(format)
+                                                   .arg(height)
+                                                   .arg(width);
+    bool result = query.exec(artistPhotoInsertQuery);
+
+    int photoID;
+    if(result)
+        return photoID;
+
+    return result;
 }
 
 int DatabaseManager::findAlbum(const QString album, const QString artist)
