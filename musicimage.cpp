@@ -21,8 +21,8 @@ MusicImage::MusicImage()
 MusicImage::MusicImage(const QImage  image,
                        const QString imageFormat)
 {
-    m_image       = image;
-    m_imageFormat = imageFormat;
+    setImage      (image);
+    setImageFormat(imageFormat);
 }
 
 // ***************************************************************
@@ -38,7 +38,11 @@ QImage MusicImage::getImage() const
 
 void MusicImage::setImage(const QImage image)
 {
-    m_image = image;
+    m_image  = image;
+    m_width  = image.width();
+    m_height = image.height();
+
+    m_imageSize = image.byteCount();
 }
 
 // ************************************
@@ -54,5 +58,37 @@ QString MusicImage::getImageFormat() const
 
 void MusicImage::setImageFormat(const QString imageFormat)
 {
-    m_imageFormat = imageFormat;
+    if(imageFormat == "PNG" || imageFormat == "JPEG")
+        m_imageFormat = imageFormat;
+    else
+    {
+        if(imageFormat.contains("png"))
+        {
+            m_imageFormat = "PNG";
+            return;
+        }
+
+        if(imageFormat.contains("jpg") || imageFormat.contains("jpeg"))
+        {
+            m_imageFormat = "JPEG";
+            return;
+        }
+
+        m_imageFormat = "UNKNOWN";
+    }
+}
+
+qlonglong MusicImage::getSize() const
+{
+    return m_imageSize;
+}
+
+int MusicImage::getHeight() const
+{
+    return m_height;
+}
+
+int MusicImage::getWidth() const
+{
+    return m_width;
 }

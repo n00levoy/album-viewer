@@ -35,9 +35,16 @@ public:
     QString getImageFormat() const;
     void    setImageFormat(const QString trackCoverFormat);
 
+    qlonglong getSize()   const;
+    int       getHeight() const;
+    int       getWidth()  const;
+
 private:
-    QImage  m_image;       // Изображение (обложка или фотография)
-    QString m_imageFormat; // Формат изображения
+    QImage    m_image;       // Изображение (обложка или фотография)
+    QString   m_imageFormat; // Формат изображения
+    qlonglong m_imageSize;   // Размер изображения в памяти
+    int       m_height;      // Высота изображения
+    int       m_width;       // Ширина изображения
 };
 
 #endif // TRACKCOVERART_H

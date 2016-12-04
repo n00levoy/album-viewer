@@ -30,16 +30,16 @@ private:
     bool prepareTables();
     bool prepareFolders();
 
-    bool insertFileInfo  (const TrackFileInfo &fileInfo);
-    bool insertMetaData  (const TrackMetaData &metaData);
-    bool insertTagData   (const TrackTagData  &tagData);
-    bool insertTrackStats();
+    int insertFileInfo  (const TrackFileInfo &fileInfo);
+    int insertMetaData  (const TrackMetaData &metaData);
+    int insertTagData   (const TrackTagData  &tagData);
+    int insertTrackStats();
 
-    int  insertArtist     (const Artist artist);
-    bool insertArtistStats();
-    int  insertArtistPhoto(const MusicImage artistPhoto);
+    int insertArtist     (const Artist artist);
+    int insertArtistStats();
+    int insertArtistPhoto(const MusicImage artistPhoto, const QString artistName);
 
-    int  insertAlbum      (const QString album);
+    int insertAlbum(const QString album);
 
     int findArtist(const QString artistName);
     int findAlbum (const QString album, const QString artist);
