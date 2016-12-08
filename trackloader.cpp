@@ -121,11 +121,11 @@ MusicImage TrackLoader::loadCoverArtFromFile(const QString fileName)
 
                         if(pictureFrame)
                         {
-                            const char*  imageDataBytes = pictureFrame->picture().data();
-                            unsigned int imageDataSize  = pictureFrame->picture().size();
+                            QByteArray imageBytes(pictureFrame->picture().data(), pictureFrame->picture().size());
 
-                            QImage  coverArtImage = QImage::fromData(QByteArray(imageDataBytes, imageDataSize));
+                            QImage  coverArtImage = QImage::fromData(imageBytes);
                             QString imageFileType = pictureFrame->mimeType().toCString(true);
+
                             return MusicImage(coverArtImage, imageFileType);
                         }
                         else

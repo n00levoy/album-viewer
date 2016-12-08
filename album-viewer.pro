@@ -9,19 +9,20 @@ SOURCES += main.cpp \
     trackfileinfo.cpp \
     databasemanager.cpp \
     artist.cpp \
-    musicimage.cpp
+    musicimage.cpp \
+    album.cpp
 
 RESOURCES += qml.qrc
 
-#INCLUDEPATH += "C:\Program Files (x86)\taglib\include"
+INCLUDEPATH += "C:\Program Files (x86)\taglib\include"
 
-INCLUDEPATH += "C:\Program Files\taglib\include"
+#INCLUDEPATH += "C:\Program Files\taglib\include"
 
-#LIBS += "C:\Program Files (x86)\taglib\lib\libtag.dll.a" \
-#        "C:\Program Files (x86)\taglib\lib\libtag_c.dll.a"
+LIBS += "C:\Program Files (x86)\taglib\lib\libtag.dll.a" \
+        "C:\Program Files (x86)\taglib\lib\libtag_c.dll.a"
 
-LIBS += "C:\Program Files\taglib\lib\libtag.dll.a" \
-        "C:\Program Files\taglib\lib\libtag_c.dll.a"
+#LIBS += "C:\Program Files\taglib\lib\libtag.dll.a" \
+#        "C:\Program Files\taglib\lib\libtag_c.dll.a"
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH =
@@ -39,4 +40,5 @@ HEADERS += \
     trackfileinfo.h \
     databasemanager.h \
     artist.h \
-    musicimage.h
+    musicimage.h \
+    album.h

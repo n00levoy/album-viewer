@@ -6,6 +6,8 @@
 #include <QSqlRecord>
 #include <QTableView>
 
+#include <QLabel>
+
 // ********************************************************************
 //
 //  Конструктор объекта управления базой данных
@@ -233,6 +235,7 @@ bool DatabaseManager::prepareTables()
 
     QString albumTableCreationQuery = "CREATE TABLE IF NOT EXISTS Album ("
                                       "AlbumID      INTEGER PRIMARY KEY, " // Номер альбома (ключ)
+                                      "Name         TEXT, "                // Название альбома
                                       "ArtistID     INTEGER, "             // Номер исполнителя альбома (внешний ключ)
                                       "Duration     INTEGER, "             // Длительность альбома
                                       "Year         INTEGER, "             // Год выпуска альбома
@@ -329,13 +332,13 @@ bool DatabaseManager::addTrack(const TrackInfo &trackInfo)
 {
     insertFileInfo(trackInfo.getFileInfo());
     insertMetaData(trackInfo.getMetaData());
-    insertTagData (trackInfo.getTagData());
+    insertTagData (trackInfo);
     insertTrackStats();
 
     QTableView *view = new QTableView;
     view->setAttribute(Qt::WA_DeleteOnClose);
     QSqlQueryModel* model = new QSqlQueryModel(view);
-    model->setQuery("SELECT * FROM Artist");
+    model->setQuery("SELECT * FROM CoverArt");
     view->setModel(model);
     view->show();
 
@@ -348,7 +351,7 @@ bool DatabaseManager::addTrack(const TrackInfo &trackInfo)
 //
 // *******************************************************
 
-int DatabaseManager::insertFileInfo(const TrackFileInfo &fileInfo)
+int DatabaseManager::insertFileInfo(const TrackFileInfo fileInfo)
 {
     QSqlQuery query(*m_database);
 
@@ -371,7 +374,7 @@ int DatabaseManager::insertFileInfo(const TrackFileInfo &fileInfo)
 //
 // *********************************************
 
-int DatabaseManager::insertMetaData(const TrackMetaData &metaData)
+int DatabaseManager::insertMetaData(const TrackMetaData metaData)
 {
     QSqlQuery query(*m_database);
 
@@ -421,13 +424,15 @@ int DatabaseManager::insertTrackStats()
 //
 // ********************************************
 
-int DatabaseManager::insertTagData(const TrackTagData &tagData)
+int DatabaseManager::insertTagData(const TrackInfo trackInfo)
 {
     QSqlQuery query(*m_database);
 
+    TrackTagData tagData = trackInfo.getTagData();
+
     auto title       = tagData.getTitle();
     auto artistName  = tagData.getArtist();
-    auto album       = tagData.getAlbumName();
+    auto albumName   = tagData.getAlbumName();
     auto trackNumber = tagData.getTrackNumber();
     auto year        = tagData.getYear();
     auto genre       = tagData.getGenre();
@@ -449,9 +454,14 @@ int DatabaseManager::insertTagData(const TrackTagData &tagData)
         albumArtistID = insertArtist(artist);
     }
 
-    int albumID = findAlbum(album, artistName);
-    if(albumID)
+    int albumID = findAlbum(albumName, albumArtist);
+    if(!albumID)
+    {
+        qlonglong  duration = trackInfo.getMetaData().getDuration();
+        MusicImage coverArt = trackInfo.getCoverArt();
+        Album album(albumName, albumArtist, duration, year, genre, trackNumber, discNumber, coverArt);
         albumID = insertAlbum(album);
+    }
 
     QString tagDataInsertQuery = "INSERT INTO TagData (Title, ArtistID, AlbumID, TrackNumber, Composer, DiscNumber) "
                                  "VALUES ('%1', %2, %3, %4, '%5', %6)";
@@ -585,7 +595,7 @@ int DatabaseManager::insertArtistPhoto(const MusicImage artistPhoto, const QStri
     }
 
     QString artistPhotoInsertQuery = "INSERT INTO ArtistPhoto (FilePath, FileSize, Format, ImageHeight, ImageWidth) "
-                                     "VALUES (%1, %2, %3, %4, %5)";
+                                     "VALUES ('%1', %2, '%3', %4, %5)";
     artistPhotoInsertQuery = artistPhotoInsertQuery.arg(filePath)
                                                    .arg(fileSize)
                                                    .arg(format)
@@ -605,11 +615,26 @@ int DatabaseManager::insertArtistPhoto(const MusicImage artistPhoto, const QStri
 //
 // ******************************
 
-int DatabaseManager::findAlbum(const QString album, const QString artist)
+int DatabaseManager::findAlbum(const QString albumName, const QString artistName)
 {
     QSqlQuery query(*m_database);
 
-    return 0;
+    int artistID = findArtist(artistName);
+    if(!artistID)
+        return 0;
+
+    QString queryText = "SELECT * FROM Album WHERE Name = '%1' AND ArtistID = '%2'";
+    queryText = queryText.arg(albumName).arg(artistID);
+    bool queryResult = query.exec(queryText);
+    if(!queryResult)
+        return 0;
+
+    int albumIDFieldNumber = query.record().indexOf("AlbumID");
+    int albumID = 0;
+    while(query.next())
+        albumID = query.value(albumIDFieldNumber).toInt();
+
+    return albumID;
 }
 
 // ***********************************
@@ -618,14 +643,90 @@ int DatabaseManager::findAlbum(const QString album, const QString artist)
 //
 // ***********************************
 
-int DatabaseManager::insertAlbum(const QString album)
+int DatabaseManager::insertAlbum(const Album album)
 {
     QSqlQuery query(*m_database);
 
-    bool result = query.exec("xD");
+    auto albumName    = album.getAlbumName();
+    auto artistName   = album.getArtistName();
+    auto duration     = album.getDuration();
+    auto coverArt     = album.getCoverArt();
+    auto discsNumber  = album.getDiscsNumber();
+    auto tracksNumber = album.getTracksNumber();
+    auto genre        = album.getGenre();
+    auto year         = album.getYear();
+
+    int artistID = findArtist(artistName);
+    if(!artistID)
+        return 0;
+
+    int coverArtID = insertCoverArt(coverArt, artistName, albumName);
+    if(!coverArtID)
+        return 0;
+
+    QString artistInsertQuery = "INSERT INTO Album (Name, ArtistID, Duration, Year, Genre, TracksNumber, DiscsNumber, CoverID) "
+                                "VALUES ('%1', %2, %3, %4, '%5', %6, %7, %8)";
+    artistInsertQuery = artistInsertQuery.arg(albumName)
+                                         .arg(artistID)
+                                         .arg(duration)
+                                         .arg(year)
+                                         .arg(genre)
+                                         .arg(tracksNumber)
+                                         .arg(discsNumber)
+                                         .arg(coverArtID);
+    bool result = query.exec(artistInsertQuery);
 
     if(result)
         return query.lastInsertId().toInt();
 
-    return 0;
+    return result;
+}
+
+int DatabaseManager::insertCoverArt(const MusicImage coverArt, const QString artistName, const QString albumName)
+{
+    QSqlQuery query(*m_database);
+
+    QString   filePath = QString();
+    qlonglong fileSize = 0;
+    QString   format   = QString();
+    int       height   = 0;
+    int       width    = 0;
+
+    if(!coverArt.getImage().isNull())
+    {
+        QImage  coverImage  = coverArt.getImage();
+        QString coverFormat = coverArt.getImageFormat();
+
+        QString coverFileName = QDir::currentPath() + "/data/covers/";
+        coverFileName += artistName;
+        coverFileName += " - ";
+        coverFileName += albumName;
+        coverFileName += ".";
+        coverFileName += coverFormat.toLower();
+
+        bool saveResult = coverImage.save(coverFileName, coverFormat.toStdString().c_str());
+
+        if(saveResult)
+        {
+            filePath = coverFileName;
+            fileSize = coverArt.getSize();
+            format   = coverFormat;
+            height   = coverArt.getHeight();
+            width    = coverArt.getWidth();
+        }
+    }
+
+    QString coverArtInsertQuery = "INSERT INTO CoverArt (FilePath, FileSize, Format, ImageHeight, ImageWidth) "
+                                  "VALUES ('%1', %2, '%3', %4, %5)";
+    coverArtInsertQuery = coverArtInsertQuery.arg(filePath)
+                                             .arg(fileSize)
+                                             .arg(format)
+                                             .arg(height)
+                                             .arg(width);
+    bool result = query.exec(coverArtInsertQuery);
+
+    if(result)
+        return query.lastInsertId().toInt();
+
+    return result;
 }

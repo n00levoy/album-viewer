@@ -8,5 +8,6 @@
         <file>images/repeatButton.svg</file>
         <file>images/shuffleButton.svg</file>
         <file>images/album-viewer.png</file>
+        <file>PlayerBar.qml</file>
     </qresource>
 </RCC>
