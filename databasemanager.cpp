@@ -445,6 +445,7 @@ int DatabaseManager::insertTagData(const TrackInfo trackInfo)
     {
         Artist artist(artistName);
         artistID = insertArtist(artist);
+        insertArtistStats();
     }
 
     int albumArtistID = findArtist(albumArtist);
@@ -452,6 +453,7 @@ int DatabaseManager::insertTagData(const TrackInfo trackInfo)
     {
         Artist artist(albumArtist);
         albumArtistID = insertArtist(artist);
+        insertArtistStats();
     }
 
     int albumID = findAlbum(albumName, albumArtist);
@@ -459,8 +461,9 @@ int DatabaseManager::insertTagData(const TrackInfo trackInfo)
     {
         qlonglong  duration = trackInfo.getMetaData().getDuration();
         MusicImage coverArt = trackInfo.getCoverArt();
-        Album album(albumName, albumArtist, duration, year, genre, trackNumber, discNumber, coverArt);
+        Album album(albumName, albumArtist, duration, year, genre, 1, discNumber, coverArt);
         albumID = insertAlbum(album);
+        insertAlbumStats();
     }
 
     QString tagDataInsertQuery = "INSERT INTO TagData (Title, ArtistID, AlbumID, TrackNumber, Composer, DiscNumber) "
@@ -724,6 +727,23 @@ int DatabaseManager::insertCoverArt(const MusicImage coverArt, const QString art
                                              .arg(height)
                                              .arg(width);
     bool result = query.exec(coverArtInsertQuery);
+
+    if(result)
+        return query.lastInsertId().toInt();
+
+    return result;
+}
+
+int DatabaseManager::insertAlbumStats()
+{
+    QSqlQuery query(*m_database);
+
+    QString albumStatsInsertQuery = "INSERT INTO AlbumStats (Count, FirstTimePlayed, LastTimePlayed) "
+                                    "VALUES (%1, %2, %3)";
+    albumStatsInsertQuery = albumStatsInsertQuery.arg(0)
+                                                 .arg(0)
+                                                 .arg(0);
+    bool result = query.exec(albumStatsInsertQuery);
 
     if(result)
         return query.lastInsertId().toInt();

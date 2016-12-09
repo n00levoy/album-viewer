@@ -40,8 +40,9 @@ private:
     int insertArtistStats();
     int insertArtistPhoto(const MusicImage artistPhoto, const QString artistName);
 
-    int insertAlbum   (const Album      album);
-    int insertCoverArt(const MusicImage coverArt, const QString artistName, const QString albumName);
+    int insertAlbum     (const Album album);
+    int insertAlbumStats();
+    int insertCoverArt  (const MusicImage coverArt, const QString artistName, const QString albumName);
 
     int findArtist(const QString artistName);
     int findAlbum (const QString albumName, const QString artistName);
