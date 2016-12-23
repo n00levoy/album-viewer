@@ -2,6 +2,8 @@
 
 #include <iostream>
 #include <iomanip>
+#include <QQmlEngine>
+#include <QQmlContext>
 
 #include <taglib/mpegfile.h>
 #include <taglib/id3v2tag.h>
@@ -22,7 +24,7 @@ QString TrackLoader::loadFromFile(QVariant folder)
     TrackFileInfo fileInfo = loadFileInfoFromFile(correctedFolderString);
     TrackMetaData metaData = loadMetaDataFromFile(correctedFolderString);
     TrackTagData  tagData  = loadTagDataFromFile (correctedFolderString);
-    MusicImage coverArt    = loadCoverArtFromFile(correctedFolderString);
+    MusicImage    coverArt = loadCoverArtFromFile(correctedFolderString);
 
     TrackInfo info(fileInfo, metaData, tagData, coverArt);
 

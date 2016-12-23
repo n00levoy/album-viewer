@@ -8,6 +8,11 @@
         <file>images/repeatButton.svg</file>
         <file>images/shuffleButton.svg</file>
         <file>images/album-viewer.png</file>
+        <file>qtquickcontrols2.conf</file>
+        <file>images/drawer.png</file>
         <file>PlayerBar.qml</file>
+        <file>MainBar.qml</file>
+        <file>pages/Library.qml</file>
+        <file>pages/Settings.qml</file>
     </qresource>
 </RCC>

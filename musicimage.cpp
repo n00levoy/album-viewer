@@ -10,6 +10,9 @@ MusicImage::MusicImage()
 {
     m_image       = QImage();
     m_imageFormat = QString();
+    m_imageSize   = 0;
+    m_height      = 0;
+    m_width       = 0;
 }
 
 // *********************************************
@@ -23,6 +26,10 @@ MusicImage::MusicImage(const QImage  image,
 {
     setImage      (image);
     setImageFormat(imageFormat);
+
+    m_imageSize   = image.byteCount();
+    m_height      = image.height();
+    m_width       = image.width();
 }
 
 // ***************************************************************

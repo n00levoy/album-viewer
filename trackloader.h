@@ -32,8 +32,6 @@ private:
     QString filename;
     QMediaPlayer* player;
 
-signals:
-
 public slots:
 };
 

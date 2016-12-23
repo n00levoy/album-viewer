@@ -2,89 +2,101 @@ import QtQuick 2.7
 
 import QtQuick.Controls 2.0
 import QtQuick.Controls.Styles 1.4
+import QtQuick.Controls.Material 2.0
 
-import QtQuick.Layouts 1.0
+import QtQuick.Layouts 1.3
 import QtQuick.Dialogs 1.2
 
 import QtGraphicalEffects 1.0
 
 import "./"
+import "./pages"
 
 ApplicationWindow {
     id: window
     visible: true
-    width: 640
-    height: 480
+    width: 1280
+    height: 720
     title: qsTr("xD Player")
+    Material.background: "#fafafa"
 
-    DropShadow {
-        anchors.fill: headerBlock
-        verticalOffset: 3
-        radius: 8.0
-        samples: 17
-        color: "#AAAAAA"
-    }
-
-    Rectangle {
+    ToolBar {
         id: headerBlock
+        Material.foreground: "white"
+        Material.primary: "#2196f3"
+        height: 50
         width: parent.width
-        height: parent.height / 6
-        color: "#1E88E5"
-        x: 0
-        y: 0
 
-        Text {
-            id: infoText
-            text: qsTr("Фонотека")
-            anchors.centerIn: headerBlock
-            color: "#FFFFFF"
+        RowLayout {
+            spacing: 20
+            anchors.fill: parent
 
-            font {
-                pointSize: 20
+            ToolButton {
+                contentItem: Image {
+                    fillMode: Image.Pad
+                    horizontalAlignment: Image.AlignHCenter
+                    verticalAlignment: Image.AlignVCenter
+                    source: "qrc:/images/drawer.png"
+                }
+                onClicked: mainMenu.open()
+            }
+
+            Label {
+                id: titleLabel
+                text: "Фонотека"
+                font.pixelSize: 24
+                elide: Label.ElideRight
+                horizontalAlignment: Qt.AlignJustify
+                verticalAlignment: Qt.AlignVCenter
+                Layout.fillWidth: true
             }
         }
     }
 
-    Rectangle {
-        anchors.centerIn: parent
+    Drawer {
+        id: mainMenu
+        width: Math.min(window.width, window.height) / 3 * 2
+        height: window.height
 
-        Text {
-            id: playingTrackText
-            anchors.horizontalCenter: parent.horizontalCenter
-            y: chooseFolderButton.y - 25
+        ListView {
+            id: listView
+            currentIndex: -1
+            anchors.fill: parent
 
-            visible: false
-        }
+            delegate: ItemDelegate {
+                width: parent.width
+                text: model.title
+                highlighted: ListView.isCurrentItem
+                onClicked: {
+                    if (listView.currentIndex != index) {
+                        listView.currentIndex = index
 
-        Button {
-            id: chooseFolderButton
-            text: qsTr("Выберите папку")
-            anchors.centerIn: parent
-
-            onClicked: {
-                fileDialog.visible = true
+                        titleLabel.text = model.title
+                        pageView.replace(model.source)
+                    }
+                    mainMenu.close()
+                }
             }
-        }
 
+            model: ListModel {
+                ListElement { title: "Главная";   source: "qrc:/pages/MainPage.qml" }
+                ListElement { title: "Фонотека";  source: "qrc:/pages/Library.qml"  }
+                ListElement { title: "Настройки"; source: "qrc:/pages/Settings.qml" }
+            }
+
+            ScrollIndicator.vertical: ScrollIndicator { }
+        }
     }
 
+    StackView {
+        id: pageView
+        anchors.top: headerBlock.bottom
+        anchors.bottom: playerBar.top
 
+        height: playerBar.top - headerBlock.bottom
+        width: parent.width
 
-    FileDialog {
-        id: fileDialog
-        title: "Please choose a file"
-        folder: "file:///E:/1999 - American Football/"
-        //folder: shortcuts.home
-        //selectFolder: true
-        onAccepted: {
-            playingTrackText.text = loader.loadFromFile(fileDialog.fileUrl)
-            playingTrackText.visible = true
-            visible = false
-        }
-        onRejected: {
-            console.log("Canceled")
-            Qt.quit()
-        }
+        initialItem: Library { }
     }
 
     DropShadow {
@@ -99,10 +111,10 @@ ApplicationWindow {
     PlayerBar {
         id: playerBar
 
-        width: parent.width
-        height: parent.height / 5
+        width: window.width
+        height: 110
 
         x: 0
-        y: parent.height - height
+        y: window.height - height
     }
 }

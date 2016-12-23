@@ -7,6 +7,19 @@ Rectangle {
     id: playBar
     color: "#FFFFFF"
 
+    Item
+    {
+        height: parent.height - 40
+        width: repeatButton.x - 100
+        x: 100
+        anchors.verticalCenter: parent.verticalCenter
+
+        Text
+        {
+            id: playBarText
+        }
+    }
+
     Button {
         id: playButton
         anchors.centerIn: parent
